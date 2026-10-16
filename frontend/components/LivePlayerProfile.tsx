@@ -1,0 +1,21 @@
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import RankBanner from './RankBanner';
+import { getPlayerProfile, type PlayerProfile } from '@/lib/api';
+import { ranks } from './rank-data';
+
+export default function LivePlayerProfile({ nmdId }: { nmdId: string }) {
+  const [player, setPlayer] = useState<PlayerProfile | null>(null);
+  const [error, setError] = useState(false);
+  useEffect(() => { const controller = new AbortController(); getPlayerProfile(nmdId, controller.signal).then(setPlayer).catch((reason: unknown) => { if ((reason as { name?: string })?.name !== 'AbortError') setError(true); }); return () => controller.abort(); }, [nmdId]);
+  if (error) return <State title="Player profile unavailable" message="This public profile could not be loaded from the backend." />;
+  if (!player) return <State title="Loading player profile…" message="Retrieving verified public player data." />;
+  const rank = ranks[player.mongolianRank.tier - 1] ?? ranks[0];
+  const winRate = player.wins + player.losses ? Math.round(player.wins / (player.wins + player.losses) * 100) : 0;
+  return <><div className="profile-layout"><section className="panel profile-card"><span className="eyebrow">PUBLIC COMPETITIVE IDENTITY</span><RankBanner rank={rank} /><h2>{player.nickname}</h2><p className="muted-copy">{player.nmdId} · {rank.name}</p><div className="profile-stats"><div><strong>{player.currentNr.toLocaleString()}</strong><small>NR RATING</small></div><div><strong>{player.verifiedMatches}</strong><small>MATCHES</small></div><div><strong>{winRate}%</strong><small>WIN RATE</small></div></div></section><section className="content-card"><div className="section-title"><h2>Player dossier</h2><span className="eyebrow">VERIFIED PUBLIC DATA</span></div><table className="table"><tbody><tr><td>Rank</td><td className="gold">{rank.name} · Tier {rank.tier}</td></tr><tr><td>Wins / losses</td><td>{player.wins} / {player.losses}</td></tr><tr><td>Current streak</td><td>{player.currentStreak}</td></tr><tr><td>Floor</td><td>{player.floor}</td></tr><tr><td>Achievements</td><td className="muted-copy">Not exposed by the public endpoint</td></tr></tbody></table></section></div><section className="content-card"><div className="section-title"><h2>Verified match history</h2><span className="eyebrow">LOCKED RESULTS ONLY</span></div><MatchHistory matches={player.matches} /></section><section className="content-card"><div className="section-title"><h2>Rating history</h2><span className="eyebrow">PUBLIC TRANSACTIONS</span></div>{player.ratingHistory.length ? <div className="table-scroll"><table className="table"><thead><tr><th>DATE</th><th>CHANGE</th><th>AFTER</th><th>NOTE</th></tr></thead><tbody>{player.ratingHistory.map((item, index) => <tr key={`${item.createdAt}-${index}`}><td>{new Date(item.createdAt).toLocaleDateString()}</td><td className={item.delta >= 0 ? 'gold' : 'danger'}>{item.delta >= 0 ? '+' : ''}{item.delta}</td><td>{item.afterNr.toLocaleString()}</td><td>{item.note ?? item.type}</td></tr>)}</tbody></table></div> : <div className="api-state">No rating transactions recorded.</div>}</section><Link className="secondary" href="/leaderboard">← Back to leaderboard</Link></>;
+}
+
+function MatchHistory({ matches }: { matches: PlayerProfile['matches'] }) { if (!matches.length) return <div className="api-state">No verified matches recorded yet.</div>; return <div className="table-scroll"><table className="table"><thead><tr><th>DATE</th><th>TOURNAMENT</th><th>MATCH</th><th>RESULT</th><th>STATUS</th></tr></thead><tbody>{matches.map((match) => <tr key={match.id}><td>{match.lockedAt ? new Date(match.lockedAt).toLocaleDateString() : '—'}</td><td>{match.tournament?.name ?? '—'}</td><td>{match.teamA?.name ?? 'TBD'} <span className="muted-copy">vs</span> {match.teamB?.name ?? 'TBD'}</td><td>{match.teamAScore ?? '—'} - {match.teamBScore ?? '—'}</td><td><span className="status-locked">LOCKED</span></td></tr>)}</tbody></table></div>; }
+function State({ title, message }: { title: string; message: string }) { return <div className="content-card"><h2>{title}</h2><p className="muted-copy">{message}</p><Link className="secondary" href="/leaderboard">Back to leaderboard</Link></div>; }

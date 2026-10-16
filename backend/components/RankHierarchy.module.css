@@ -1,0 +1,13 @@
+.section{background:linear-gradient(145deg,#122232 0%,#0b1621 100%);border:1px solid #3e5365;border-radius:2px;padding:30px 30px 34px;color:#f3f1ed;box-sizing:border-box;box-shadow:0 18px 45px #0005,inset 0 1px #ffffff0a;position:relative;overflow:hidden}
+.section::before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,#e8b65d 18%,#e8b65d 82%,transparent);opacity:.75}
+.header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #33495b}
+.eyebrow{color:#e8b65d;font-size:11px;font-weight:800;letter-spacing:.18em;margin:0 0 8px}
+.header h2{font-size:clamp(21px,2.3vw,30px);letter-spacing:-.035em;line-height:1.15;margin:0;font-weight:800}
+.link{color:#e8b65d;text-decoration:none;white-space:nowrap;font-size:12px}.link:hover{text-decoration:underline}
+.scroll{overflow-x:auto;scrollbar-width:thin;scrollbar-color:#566576 transparent}
+.grid{display:grid;grid-template-columns:repeat(9,minmax(110px,1fr));gap:12px;min-width:1030px}
+.card{min-width:0;min-height:248px;border:1px solid #334b5f;background:linear-gradient(180deg,#1a3043 0%,#0b1723 100%);border-radius:2px;padding:14px 7px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;transition:transform .2s,border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:2px;background:#e8b65d;opacity:.34}
+.card:hover{transform:translateY(-5px);border-color:#e8b65d;box-shadow:0 12px 22px #0006}.banner{height:142px;width:112px;flex-shrink:0;filter:drop-shadow(0 7px 8px #0008)}
+.card h3{font-size:12px;color:#e8b65d;margin:3px 0 4px;font-weight:800;line-height:1.3}.card p{font-size:10px;color:#b1bbc3;margin:0 0 4px;line-height:1.35}.card span{font-size:10px;color:#9ca9b4}
+@media(max-width:700px){.section{padding:24px 16px 28px}.header{align-items:start}.header h2{font-size:22px}.link{font-size:11px;margin-top:7px}.grid{gap:9px;min-width:1040px}.card{min-height:232px}.banner{height:128px;width:102px}}

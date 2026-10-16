@@ -1,0 +1,94 @@
+:root { --admin-bg: #0a0f12; --admin-panel: #141b1d; --admin-line: #354044; --admin-muted: #8c9589; --admin-text: #ecede6; --admin-lime: #d6a33c; }
+.admin-shell { min-height: 100vh; background: var(--admin-bg); color: var(--admin-text); padding: 32px; }
+.admin-wrap { max-width: 1280px; margin: 0 auto; position: relative; }
+.admin-wrap::before { content: 'ᠨ'; position: fixed; right: 5%; bottom: 2%; color: #d6a33c; opacity: .06; font-size: 280px; pointer-events: none; }
+.admin-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 28px; padding: 30px; min-height: 190px; border: 1px solid #4c3b20; border-radius: 7px; background-image: linear-gradient(90deg, rgba(10,15,18,.96) 0%, rgba(10,15,18,.72) 45%, rgba(10,15,18,.2) 100%), url('/images/mongolian-cs2-hero.png'); background-position: center; background-size: cover; }
+.admin-header h1 { margin: 8px 0; font-size: clamp(30px, 5vw, 54px); letter-spacing: -1px; }
+.admin-header p, .admin-muted { color: var(--admin-muted); }
+.admin-eyebrow { color: var(--admin-lime); font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+.admin-link { color: var(--admin-lime); text-decoration: none; font-size: 13px; }
+.admin-dashboard-shell { max-width: 1500px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; }
+.admin-sidebar { position: sticky; top: 24px; height: calc(100vh - 48px); display: flex; flex-direction: column; padding: 22px 14px; background: #0d1519; border: 1px solid var(--admin-line); border-radius: 8px; }
+.admin-brand { display: flex; align-items: center; gap: 8px; color: #e4c37b; text-decoration: none; font-weight: 800; letter-spacing: 1.5px; font-size: 13px; padding: 6px 9px 22px; }
+.admin-brand-logo { width: 38px; height: 38px; object-fit: contain; flex: 0 0 auto; }
+.admin-sidebar-label { color: var(--admin-muted); border-top: 1px solid var(--admin-line); padding: 20px 9px 10px; font-size: 9px; letter-spacing: 1.5px; }
+.admin-sidebar-nav { display: grid; gap: 4px; }
+.admin-sidebar-nav a { display: flex; align-items: center; gap: 9px; padding: 10px 9px; color: #aeb6ac; text-decoration: none; border-radius: 4px; font-size: 12px; }
+.admin-sidebar-nav a:hover, .admin-sidebar-nav a.active { color: #f2e5bd; background: #202a2b; }
+.admin-sidebar-nav a.active { border-left: 2px solid var(--admin-lime); }
+.admin-sidebar-nav a small { margin-left: auto; color: #b88d3b; font-size: 8px; }
+.admin-sidebar-footer { margin-top: auto; border-top: 1px solid var(--admin-line); padding: 16px 9px 0; color: var(--admin-muted); font-size: 9px; line-height: 1.8; letter-spacing: 1px; }
+.admin-sidebar-footer strong { color: var(--admin-lime); font-size: 10px; }
+.admin-main { min-width: 0; }
+.admin-topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 24px; padding: 4px 0 18px; border-bottom: 1px solid var(--admin-line); }
+.admin-topbar h1 { margin: 7px 0 5px; font-size: 32px; }
+.admin-topbar p { margin: 0; color: var(--admin-muted); font-size: 13px; }
+.admin-topbar-actions { display: flex; align-items: center; gap: 10px; color: var(--admin-muted); font-size: 11px; }
+.admin-topbar-actions form { display: inline; margin-left: 8px; }
+.admin-user-chip { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #27414d; color: #e4c37b; }
+.admin-metric-grid { margin-bottom: 18px; }
+.admin-stat small { display: block; color: var(--admin-muted); margin-top: 7px; font-size: 10px; }
+.admin-overview-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; margin-bottom: 18px; }
+.admin-overview-grid .admin-panel { margin-bottom: 0; }
+.admin-feature-panel { background-image: linear-gradient(110deg, rgba(20,27,29,.97), rgba(20,27,29,.76)), url('/images/mongolian-cs2-hero.png'); background-position: center; background-size: cover; }
+.admin-feature-meta { display: flex; flex-wrap: wrap; gap: 16px; margin: 20px 0 4px; color: #c2c9be; font-size: 11px; }
+.admin-feature-meta span:first-child { color: #e4c37b; }
+.admin-registration-list { display: grid; gap: 2px; }
+.admin-registration-row { display: flex; align-items: center; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--admin-line); font-size: 11px; }
+.admin-registration-row:last-child { border-bottom: 0; }
+.admin-registration-row > span:nth-child(2) { display: grid; gap: 3px; min-width: 0; }
+.admin-registration-row small { color: var(--admin-muted); font-size: 9px; }
+.admin-registration-row b { margin-left: auto; color: #d6a33c; font-size: 9px; }
+.admin-team-mark { display: grid; place-items: center; width: 25px; height: 25px; flex: 0 0 auto; border: 1px solid #80642d; color: #e4c37b; background: #20251f; }
+.admin-ranking-panel { margin-bottom: 18px; }
+.admin-mini-ranking { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.admin-mini-ranking > div { display: grid; gap: 6px; padding: 12px; border: 1px solid var(--admin-line); background: #101719; }
+.admin-mini-ranking span, .admin-mini-ranking b { color: var(--admin-muted); font-size: 10px; }
+.admin-mini-ranking strong { color: #e4c37b; font-size: 13px; overflow: hidden; text-overflow: ellipsis; }
+.admin-rank-overview { display: grid; grid-template-columns: repeat(9, minmax(75px, 1fr)); gap: 8px; overflow-x: auto; }
+.admin-rank-card { display: grid; justify-items: center; gap: 5px; min-width: 75px; padding: 10px 5px; border: 1px solid #354044; background: linear-gradient(180deg, rgba(57,48,31,.48), rgba(11,17,20,.9)); border-radius: 3px; text-align: center; }
+.admin-rank-card strong { color: #e4c37b; font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.admin-rank-card small { color: var(--admin-muted); font-size: 9px; }
+.admin-table-scroll { overflow-x: auto; }
+.admin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+.admin-stat, .admin-panel { background: var(--admin-panel); border: 1px solid var(--admin-line); border-radius: 6px; }
+.admin-stat { padding: 18px; }
+.admin-stat span { display: block; color: var(--admin-muted); font-size: 10px; letter-spacing: 1px; }
+.admin-stat strong { display: block; margin-top: 10px; font-size: 28px; }
+.admin-panel { padding: 20px; margin-bottom: 20px; }
+.admin-panel h2, .admin-panel h3 { margin: 0 0 14px; }
+.admin-panel h2 { font-size: 24px; }
+.admin-panel h3 { font-size: 18px; }
+.admin-panel-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 15px; }
+.admin-status { border: 1px solid #886b2e; color: var(--admin-lime); padding: 6px 9px; border-radius: 3px; font-size: 10px; letter-spacing: 1px; }
+.admin-actions { display: flex; flex-wrap: wrap; gap: 9px; margin: 16px 0; }
+.admin-button { border: 1px solid #53683e; background: transparent; color: var(--admin-text); border-radius: 4px; padding: 9px 12px; cursor: pointer; font-size: 12px; }
+.admin-button:hover:not(:disabled) { background: var(--admin-lime); color: #192112; }
+.admin-button:disabled { cursor: not-allowed; opacity: .45; }
+.admin-message { padding: 10px 12px; border: 1px solid #53683e; color: var(--admin-lime); border-radius: 4px; font-size: 12px; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.admin-table th, .admin-table td { padding: 12px 9px; border-bottom: 1px solid var(--admin-line); text-align: left; vertical-align: top; }
+.admin-table th { color: var(--admin-muted); font-size: 10px; letter-spacing: 1px; }
+.admin-table td small { display: block; color: var(--admin-muted); margin-top: 4px; }
+.admin-bracket { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; overflow-x: auto; }
+.admin-round { min-width: 210px; }
+.admin-round h4 { color: var(--admin-muted); font-size: 10px; letter-spacing: 1px; }
+.admin-match { border: 1px solid var(--admin-line); padding: 12px; margin-bottom: 10px; border-radius: 4px; background: #141814; }
+.admin-match p { margin: 5px 0; font-size: 12px; }
+.admin-match small { color: var(--admin-muted); }
+.admin-result-form { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--admin-line); }
+.admin-result-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.admin-result-fields label { display: grid; gap: 4px; color: var(--admin-muted); font-size: 10px; }
+.admin-result-fields input, .admin-result-fields select { width: 100%; padding: 7px; border: 1px solid var(--admin-line); border-radius: 3px; background: #101311; color: var(--admin-text); }
+.admin-result-fields label:last-child { grid-column: 1 / -1; }
+.login-shell { min-height: 100vh; display: grid; place-items: center; background: var(--admin-bg); color: var(--admin-text); padding: 20px; }
+.login-card { width: min(420px, 100%); background: var(--admin-panel); border: 1px solid var(--admin-line); border-radius: 8px; padding: 28px; }
+.login-card h1 { margin: 10px 0; }
+.login-card p { color: var(--admin-muted); line-height: 1.6; }
+.login-card form { display: grid; gap: 14px; margin-top: 22px; }
+.login-card label { display: grid; gap: 6px; color: var(--admin-muted); font-size: 12px; }
+.login-card input { width: 100%; padding: 11px; border: 1px solid var(--admin-line); border-radius: 4px; background: #101311; color: var(--admin-text); }
+.login-error { color: #f08f7d; font-size: 12px; }
+@media (max-width: 800px) { .admin-shell { padding: 20px 14px; } .admin-grid { grid-template-columns: repeat(2, 1fr); } .admin-header { display: block; } .admin-header .admin-link { display: inline-block; margin-top: 10px; } .admin-table { min-width: 650px; } .admin-panel { overflow-x: auto; } }
+@media (max-width: 900px) { .admin-dashboard-shell { grid-template-columns: 1fr; } .admin-sidebar { position: static; height: auto; } .admin-sidebar-nav { grid-template-columns: repeat(3, 1fr); } .admin-sidebar-footer { display: none; } .admin-overview-grid { grid-template-columns: 1fr; } .admin-mini-ranking { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .admin-shell { padding: 16px 10px; } .admin-sidebar-nav { grid-template-columns: repeat(2, 1fr); } .admin-topbar { display: block; } .admin-topbar-actions { margin-top: 16px; } .admin-mini-ranking { grid-template-columns: 1fr; } }
