@@ -1,0 +1,36 @@
+{
+  "purpose": "Exact repository snapshots before Phase 1 navigation additions; not newly adopted rule versions.",
+  "capturedOn": "2026-10-16",
+  "files": [
+    {
+      "source": "docs/ikh-zasag-rulebook.md",
+      "snapshot": "docs/governance/history/docs/ikh-zasag-rulebook.md",
+      "sha256": "886a931e954e51b7b4e6e6276d674b61de9f6da6cf77f6a4f652ebbedc1e3541"
+    },
+    {
+      "source": "docs/tournament-operations.md",
+      "snapshot": "docs/governance/history/docs/tournament-operations.md",
+      "sha256": "14b4071e55b19552c3d190dfd0766b78dd31d31ac72c72540192c0fe56c26f8c"
+    },
+    {
+      "source": "docs/operations-integration-v1.md",
+      "snapshot": "docs/governance/history/docs/operations-integration-v1.md",
+      "sha256": "f5d886138754df11364cf489760a94b02dbdf4f7991e69337def58351f47e568"
+    },
+    {
+      "source": "docs/bokh-mode-v1.1.md",
+      "snapshot": "docs/governance/history/docs/bokh-mode-v1.1.md",
+      "sha256": "082379ad75bcbef8ec2736b4aeb1416631050df2be52644506b86a18845a7a51"
+    },
+    {
+      "source": "README.md",
+      "snapshot": "docs/governance/history/README.md",
+      "sha256": "bb67c264908205f23dadbc58a810f3a461d6483317859c13269b2d49a33f1434"
+    },
+    {
+      "source": "backend/README.md",
+      "snapshot": "docs/governance/history/backend/README.md",
+      "sha256": "b28fa21a6dbf4bd0ce92fa1a69d71afd77266fc4117ccb80fee084fc846f6c05"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # eNomad Arena
 
+> Governance reconciliation: consult the [current decision register](docs/governance/decision-register.md) and [preserved pre-reconciliation source](docs/governance/history/README.md). The original text below is retained; conflicting Grand Battle restrictions, blanket 3v3 deferral, economic proposals and older workflows do not override later approved decisions. This notice does not change application behavior or historical tournament rules. Check-in timing remains under revision.
+
 Responsive, dependency-free website prototype for the Nuudeltsgeey competitive identity platform.
 
 ## Run

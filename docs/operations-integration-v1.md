@@ -1,5 +1,7 @@
 # Operations Integration Addendum v1
 
+> Governance reconciliation: consult the [current decision register](governance/decision-register.md) and [preserved pre-reconciliation source](governance/history/docs/operations-integration-v1.md). The original text below is retained; conflicting Grand Battle restrictions, blanket 3v3 deferral, economic proposals and older workflows do not override later approved decisions. This notice does not change application behavior or historical tournament rules. Check-in timing remains under revision.
+
 This addendum adapts useful operational ideas from the earlier full-stack operations project without changing the current competition rules.
 
 ## Included in the current preview

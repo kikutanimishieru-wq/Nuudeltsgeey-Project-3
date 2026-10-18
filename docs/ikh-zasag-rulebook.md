@@ -1,5 +1,7 @@
 # Ikh Zasag Rulebook — Competition Addendum v1
 
+> Governance reconciliation: consult the [current decision register](governance/decision-register.md) and [preserved pre-reconciliation source](governance/history/docs/ikh-zasag-rulebook.md). The original text below is retained; conflicting Grand Battle restrictions, blanket 3v3 deferral, economic proposals and older workflows do not override later approved decisions. This notice does not change application behavior or historical tournament rules. Check-in timing remains under revision.
+
 ## Fairness: No Manual Match Control Rule
 
 Nuudeltsgeey prohibits manual opponent assignment. Organizers may configure tournament style, but the system exclusively generates brackets, seeds, and progressions automatically under Ikh Zasag logic to ensure fairness, transparency, and anti-corruption.

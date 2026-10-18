@@ -1,9 +1,13 @@
+import { assertTournamentOperationAvailable } from '@/lib/tournament-activation';
+import { assertCurrentPermission } from '@/lib/transaction-authority';
+import { assertRosterIdentities } from '@/lib/competition-authority';
+import { secureMutation } from '@/lib/secure-route';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { authError, requireAdmin } from '@/lib/session';
 import { writeAudit } from '@/lib/audit';
 
-export async function POST(_: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
+export const POST = secureMutation(async function POST(_: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
   try {
     const admin = await requireAdmin();
     const { tournamentId } = await params;
@@ -16,13 +20,16 @@ export async function POST(_: Request, { params }: { params: Promise<{ tournamen
       if (starters !== tournament.startersPerTeam || substitutes > tournament.maxSubstitutes) return NextResponse.json({ error: 'ROSTER_DOES_NOT_MATCH_TOURNAMENT_CONFIGURATION' }, { status: 409 });
     }
     await prisma.$transaction(async (tx) => {
+      await assertCurrentPermission(tx, admin.id, 'ADMIN_DASHBOARD');
+      await assertTournamentOperationAvailable(tx, tournamentId, true);
+      await assertRosterIdentities(tx, tournamentId);
       await tx.tournamentRegistration.updateMany({ where: { tournamentId, status: 'APPROVED' }, data: { rosterLockedAt: new Date() } });
       await tx.tournament.update({ where: { id: tournamentId }, data: { status: 'ROSTER_LOCKED' } });
+      await writeAudit(tx, { actorId: admin.id, action: 'ROSTERS_LOCKED', entityType: 'Tournament', entityId: tournamentId, tournamentId, metadata: { approvedTeams: registrations.length } });
     });
-    await writeAudit({ actorId: admin.id, action: 'ROSTERS_LOCKED', entityType: 'Tournament', entityId: tournamentId, tournamentId, metadata: { approvedTeams: registrations.length } });
     return NextResponse.json({ status: 'ROSTERS_LOCKED', approvedTeams: registrations.length });
   } catch (error) {
     const result = authError(error);
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
-}
+});

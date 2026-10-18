@@ -1,0 +1,15 @@
+# Phase 4 verified DETAIL classifier fix
+
+The classifier blocker is resolved locally. No database connection, migration, native database test or branch operation was performed. PostgreSQL end-to-end wrapper behavior remains unvalidated.
+
+expectedRejection now requires all of: VERIFIED_DUPLICATE_DETAIL; unexpected_code=false; exactly one supported Prisma code (P2010 or P2002); and observed SQLSTATE 23505 with no conflicting states. DUPLICATE_MARKER and PARTICIPATION_TRIGGER remain diagnostic labels only. Generic P2010/P2002, missing SQLSTATE, missing token, unrelated constraints and timeout/deadlock/connection/serialization errors fail.
+
+The exact token is imported from phase4-duplicate-sql.cjs. A token is recognized only alongside 23505 in structured DETAIL or raw-query metadata.message; a top-level exception message or an unrelated userInput field cannot supply it. The SQL wrapper's token matches the exported constant. It is a fixed SQL literal, never interpolated from fixture JSON. Before emitting it, the wrapper verifies the original state, exact duplicate-rule message, empty constraint name and expected trigger function context; other errors rethrow. The classifier is test-only, consumes actual caught errors, and does not accept a reporting enum supplied by an application user.
+
+The native test still requires valid fixture/trigger context, two distinct concurrent PostgreSQL sessions, exactly one fulfilled transaction and one rejection, and the mandatory database postconditions: one registration, one roster member, no duplicates, correct winning team, shared player only. A verified token alone cannot pass the test. Parent/child writes remain in the same transaction. No schema or production code changed.
+
+Regression coverage now rejects the legacy context-only cases and tests verified-token acceptance for P2010/P2002 plus 23505, missing/unsupported codes, unrelated token values and constraints, marker-only/trigger-only evidence and failures despite a valid token. Verification: 44 Python tests, 15 JavaScript tests, TypeScript no-emit, Python/JavaScript syntax and whitespace checks passed. The existing reporter integration test runs a local synthetic assertion only, not native database tests.
+
+Execution-limit inspection found no repository-wide 120-second native-suite cap. The behavior launcher passes timeout=2700 seconds, Vitest per-test budget is 300000ms and hook budget is 120000ms. This shell reports unlimited CPU time and has no .vscode tasks.json or launch.json. These observations cannot establish that an external terminal, agent service or automation host lacks a 120-second wall-clock cap. That remains an unresolved operational risk; verify the actual execution host before authorizing a full native run. No launch environment was changed.
+
+A V4 branch may be prepared after separate authorization. The current target remains V3 and is not reset, deleted or rerun; all target/TLS/checksum/redaction/failure guards remain unchanged. The historical V3 rejection's exact origin remains UNKNOWN. No automatic retries, cleanup, push, deployment or Phase 5 work occurred.

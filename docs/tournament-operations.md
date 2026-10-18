@@ -1,5 +1,7 @@
 # Tournament Operations Manual — Styles and Arena Days v1
 
+> Governance reconciliation: consult the [current decision register](governance/decision-register.md) and [preserved pre-reconciliation source](governance/history/docs/tournament-operations.md). The original text below is retained; conflicting Grand Battle restrictions, blanket 3v3 deferral, economic proposals and older workflows do not override later approved decisions. This notice does not change application behavior or historical tournament rules. Check-in timing remains under revision.
+
 ## Host configuration
 
 Choose match format (5v5, 2v2, solo), map pool, entry type (free, token, sponsored), rank weight, token stakes, verification level, and tournament style. These are format-level settings only. Follow the [No Manual Match Control Rule](./ikh-zasag-rulebook.md).

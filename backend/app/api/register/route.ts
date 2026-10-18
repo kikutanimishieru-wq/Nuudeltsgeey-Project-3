@@ -1,7 +1,10 @@
+import { secureMutation } from '@/lib/secure-route';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { writeAudit } from '@/lib/audit';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 const registrationSchema = z.object({
   email: z.string().trim().email().max(254),
@@ -18,7 +21,7 @@ function formatNmd(value: number) {
   return `NMD-${String(value).padStart(6, '0')}`;
 }
 
-export async function POST(request: Request) {
+export const POST = secureMutation(async function POST(request: Request) {
   const parsed = registrationSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: 'INVALID_REGISTRATION', details: parsed.error.flatten() }, { status: 400 });
@@ -26,6 +29,7 @@ export async function POST(request: Request) {
 
   const input = parsed.data;
   const email = input.email.toLowerCase();
+  await enforceRateLimit('registration-account', email, 5, 3600);
   const passwordHash = await bcrypt.hash(input.password, 12);
 
   try {
@@ -43,7 +47,7 @@ export async function POST(request: Request) {
       });
       const publicNmdId = formatNmd(sequence.nextValue - 1);
 
-      return tx.user.create({
+      const account = await tx.user.create({
         data: {
           email,
           passwordHash,
@@ -65,8 +69,10 @@ export async function POST(request: Request) {
             },
           },
         },
-        select: { publicNmdId: true, accountStatus: true },
+        select: { id: true, publicNmdId: true, accountStatus: true },
       });
+      await writeAudit(tx, { actorId: account.id, action: 'ACCOUNT_REGISTERED', entityType: 'User', entityId: account.id });
+      return { publicNmdId: account.publicNmdId, accountStatus: account.accountStatus };
     });
 
     return NextResponse.json({
@@ -77,7 +83,7 @@ export async function POST(request: Request) {
     if (error instanceof Error && error.message === 'ACCOUNT_ALREADY_EXISTS') {
       return NextResponse.json({ error: 'ACCOUNT_ALREADY_EXISTS' }, { status: 409 });
     }
-    console.error('Registration failed', error);
+    console.error('Registration failed');
     return NextResponse.json({ error: 'REGISTRATION_FAILED' }, { status: 500 });
   }
-}
+});

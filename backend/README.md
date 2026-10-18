@@ -1,5 +1,7 @@
 # Nuudeltsgeey backend
 
+> Governance reconciliation: consult the [current decision register](../docs/governance/decision-register.md) and [preserved pre-reconciliation source](../docs/governance/history/backend/README.md). The original text below is retained; conflicting Grand Battle restrictions, blanket 3v3 deferral, economic proposals and older workflows do not override later approved decisions. This notice does not change application behavior or historical tournament rules. Check-in timing remains under revision.
+
 This is the real backend foundation for the current project. It uses Next.js, Auth.js/NextAuth, Prisma, and PostgreSQL while preserving the existing browser prototype.
 
 ## Scope
@@ -42,3 +44,11 @@ The foundation migration has been applied to the configured PostgreSQL database.
 Copy `.env.example` to `.env`, set a private PostgreSQL `DATABASE_URL`, then run `npm install`, `npm run db:validate`, `npm run db:generate`, and `npm run dev` from this directory. For the repeatable first demo, follow [docs/DEMO.md](docs/DEMO.md) and run `npm run demo:smoke`.
 
 Do not commit `.env`, real identity data, passwords, or production credentials.
+
+## Phase 2 identity and authority
+
+See [the Phase 2 review](docs/PHASE2_IDENTITY_AUTHORITY.md) for identity linking, permission boundaries, configuration, tests and the additive migration risk review. The new migration is a proposal for review, not production approval. No production migration or deployment was performed.
+
+## Final Phase 4 governance
+
+The owner-approved final policy is implemented prospectively for newly opened events. See [the Phase 4 report](docs/PHASE4_REGISTRATION_AND_LOCK.md) and [API/database contract](docs/PHASE4_FINAL_API_DATABASE.md). Registration closes at start minus 15 minutes; players confirm their own attendance; qualifying Floor 2 personal late requests are approved and consumed atomically with check-in by start plus 15 minutes. Every team format permits one optional substitute. Phase 5 owns approved fair random byes and remains unimplemented. No configured Neon migration was applied.

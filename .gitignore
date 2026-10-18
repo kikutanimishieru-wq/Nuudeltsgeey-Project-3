@@ -5,3 +5,6 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# Private local Phase 4 diagnostic evidence (never commit).
+/.phase4-diagnostics-private/

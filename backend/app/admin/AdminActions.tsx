@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function AdminActions({ tournamentId, status }: { tournamentId: string; status: string }) {
+export default function AdminActions({ tournamentId, status, configurationOnly = false }: { tournamentId: string; status: string; configurationOnly?: boolean }) {
   const router = useRouter();
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -19,6 +19,7 @@ export default function AdminActions({ tournamentId, status }: { tournamentId: s
     router.refresh();
   }
 
+  if (configurationOnly) return <p className="admin-muted">Configuration draft: registration, roster lock and bracket generation are unavailable.</p>;
   return <div><div className="admin-actions">
     <button className="admin-button" disabled={busy} onClick={() => post(`/api/admin/tournaments/${tournamentId}/lock-rosters`)}>Lock rosters</button>
     <button className="admin-button" disabled={busy || status !== 'ROSTER_LOCKED'} onClick={() => post(`/api/admin/tournaments/${tournamentId}/generate-bracket`)}>Generate bracket</button>

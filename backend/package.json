@@ -24,12 +24,24 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "prisma": "^6.16.2",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "vitest": "4.1.11"
   },
-  "prisma": { "seed": "node prisma/seed.cjs" }
+  "prisma": {
+    "seed": "node prisma/seed.cjs"
+  },
+  "overrides": {
+    "postcss": "8.5.30",
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.0"
+    }
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
 }

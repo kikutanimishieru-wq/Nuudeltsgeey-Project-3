@@ -116,6 +116,15 @@ model User {
   publicNmdId           String        @unique
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
+  incidentParties       IncidentParty[]
+  reviewAssignments     ReviewAssignment[] @relation("AssignedReviewer")
+  reviewAssignmentsMade ReviewAssignment[] @relation("AssigningAdmin")
+  externalIdentities    ExternalIdentity[]
+  identityChallenges    IdentityChallenge[]
+  identityGrants        IdentityLoginGrant[]
+  lockedTournaments TournamentLockSnapshot[]
+  latenessDecisions TournamentLatenessClaim[]
+  hostedTournaments     Tournament[] @relation("TournamentHost")
   identity              PrivateIdentity?
   profile               PlayerProfile?
   auditEvents           AuditEvent[]
@@ -168,6 +177,8 @@ model PlayerProfile {
   matchSnapshots     PlayerNrSnapshot[]
   achievements       PlayerAchievement[]
   teamInvitations    TeamInvitation[]
+  soloRegistrations TournamentRegistration[] @relation("SoloEntrant")
+  latenessClaims TournamentLatenessClaim[]
   tournamentRosters  TournamentRosterMember[]
   matchParticipants  MatchParticipant[]
   tournamentAwards   TournamentAward[]
@@ -230,6 +241,10 @@ model TeamInvitation {
 }
 
 model Tournament {
+  hostUserId      String?
+  host            User? @relation("TournamentHost", fields: [hostUserId], references: [id], onDelete: Restrict)
+  configurationPolicy String?
+  entryFee        Int?
   id              String                    @id @default(uuid())
   name            String
   venue           String
@@ -245,12 +260,17 @@ model Tournament {
   startsAt        DateTime?
   cafeId          String?
   cafe            Cafe?                     @relation(fields: [cafeId], references: [id])
+  registrationPolicy TournamentRegistrationPolicy?
+  lockSnapshot TournamentLockSnapshot?
+  latenessClaims TournamentLatenessClaim[]
+  latenessRequests TournamentLatenessRequest[]
   registrations   TournamentRegistration[]
   matches         Match[]
   incidents       Incident[]
   auditEvents     AuditEvent[]
   awards          TournamentAward[]
   rulesAcceptances RulesAcceptance[]
+  @@index([hostUserId, status])
   createdAt       DateTime                  @default(now())
   updatedAt       DateTime                  @updatedAt
 }
@@ -258,15 +278,21 @@ model Tournament {
 model TournamentRegistration {
   id            String             @id @default(uuid())
   tournamentId  String
-  teamId        String
+  teamId        String?
+  soloPlayerId  String?
+  soloPlayer PlayerProfile? @relation("SoloEntrant", fields: [soloPlayerId], references: [id], onDelete: Restrict)
+  withdrawnAt   DateTime? @db.Timestamptz(3)
+  disqualifiedAt DateTime? @db.Timestamptz(3)
+  disqualificationReason String?
   status        RegistrationStatus @default(PENDING)
   checkedInAt   DateTime?
   checkInStatus String             @default("NOT_CHECKED_IN")
   checkInNote   String?
   rosterLockedAt DateTime?
   tournament    Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  team          Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team          Team?              @relation(fields: [teamId], references: [id], onDelete: Cascade)
   roster        TournamentRosterMember[]
+  @@unique([tournamentId, soloPlayerId])
   @@unique([tournamentId, teamId])
 }
 
@@ -276,6 +302,10 @@ model TournamentRosterMember {
   playerId       String
   isStarter      Boolean                @default(true)
   acceptedAt     DateTime?
+  checkedInAt    DateTime? @db.Timestamptz(3)
+  checkInRuleVersion String?
+  attendanceVerifiedAt DateTime? @db.Timestamptz(3)
+  attendanceEvidenceRef String?
   registration   TournamentRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
   player         PlayerProfile          @relation(fields: [playerId], references: [id], onDelete: Cascade)
   @@unique([registrationId, playerId])
@@ -300,6 +330,8 @@ model Match {
   teamB           Team?                @relation("TeamB", fields: [teamBId], references: [id])
   confirmations   ResultConfirmation[]
   snapshots       PlayerNrSnapshot[]
+  latenessClaims TournamentLatenessClaim[]
+  latenessRequests TournamentLatenessRequest[]
   rankingEvent    RankingEvent?
   corrections     MatchCorrection[]
   incidents       Incident[]
@@ -433,6 +465,8 @@ model Incident {
   status         IncidentStatus @default(REPORTED)
   penalty        PenaltyLevel   @default(NONE)
   evidenceRef    String?
+  parties        IncidentParty[]
+  assignments    ReviewAssignment[]
   playerResponse String?
   decidedAt      DateTime?
   tournament     Tournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
@@ -484,4 +518,147 @@ model AuditEvent {
   tournament   Tournament? @relation(fields: [tournamentId], references: [id])
   match        Match?      @relation(fields: [matchId], references: [id])
   @@index([entityType, entityId, createdAt])
+}
+
+// Provider possession is verified server-side, never by an administrative ACTIVE flag.
+enum IdentityProvider {
+  STEAM
+  DISCORD
+}
+
+model ExternalIdentity {
+  id                String @id @default(uuid())
+  userId            String
+  provider          IdentityProvider
+  providerAccountId String
+  verifiedAt        DateTime
+  revokedAt         DateTime?
+  administrativeHoldAt DateTime?
+  revocationKind    String?
+  user              User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@unique([provider, providerAccountId])
+  @@unique([userId, provider])
+}
+
+model IdentityChallenge {
+  tokenHash   String @id
+  provider    IdentityProvider
+  intent      String
+  browserHash String
+  reauthenticatedAt DateTime?
+  userId      String?
+  user        User? @relation(fields: [userId], references: [id], onDelete: Restrict)
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  @@index([expiresAt])
+}
+
+model IdentityLoginGrant {
+  tokenHash   String @id
+  userId      String
+  provider    IdentityProvider
+  browserHash String
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  user        User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@index([expiresAt])
+}
+
+model SteamAssertionNonce {
+  nonceHash String @id
+  expiresAt DateTime
+}
+
+model RateLimitBucket {
+  key       String @id
+  count     Int
+  resetsAt  DateTime
+  @@index([resetsAt])
+}
+
+// Explicit parties and independently attested assignment close gaps in legacy cases.
+model IncidentParty {
+  incidentId String
+  userId     String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Restrict)
+  user       User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@id([incidentId, userId])
+}
+
+model ReviewAssignment {
+  incidentId String
+  reviewerId String
+  assignedById String
+  attestedAt DateTime @default(now())
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Restrict)
+  reviewer User @relation("AssignedReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+  assignedBy User @relation("AssigningAdmin", fields: [assignedById], references: [id], onDelete: Restrict)
+  @@id([incidentId, reviewerId])
+}
+
+// Approval references are governance inputs, not host-editable policies.
+model TournamentRegistrationPolicy {
+  tournamentId String @id
+  registrationClosesAt DateTime @db.Timestamptz(3)
+  deadlineApprovalRef String
+  rulesVersion String
+  attendancePolicyRef String?
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Restrict)
+}
+
+model TournamentLatenessClaim {
+  id String @id @default(uuid())
+  tournamentId String
+  playerId String
+  player PlayerProfile @relation(fields: [playerId], references: [id], onDelete: Restrict)
+  matchId String?
+  match Match? @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  scheduledStart DateTime @db.Timestamptz(3)
+  protectedDeadline DateTime @db.Timestamptz(3)
+  reason String
+  evidenceRef String
+  policyVersion String?
+  requests TournamentLatenessRequest[]
+  decision String @default("PENDING_GOVERNANCE")
+  decisionById String?
+  decisionBy User? @relation(fields: [decisionById], references: [id], onDelete: Restrict)
+  decisionAt DateTime? @db.Timestamptz(3)
+  usedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Restrict)
+  @@unique([tournamentId, playerId])
+}
+
+model TournamentLockSnapshot {
+  tournamentId String @id
+  lockedAt DateTime @default(now()) @db.Timestamptz(3)
+  lockedById String
+  lockedBy User @relation(fields: [lockedById], references: [id], onDelete: Restrict)
+  rulesVersion String
+  activePlayerCount Int
+  classification String
+  snapshot Json
+  digest String
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Restrict)
+}
+
+// Requests are separate from the one-per-tournament incident, preserving expired
+// attempts without consuming or resetting that shared incident.
+model TournamentLatenessRequest {
+  id String @id @default(uuid())
+  claimId String
+  claim TournamentLatenessClaim @relation(fields: [claimId], references: [id], onDelete: Restrict)
+  tournamentId String
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Restrict)
+  matchId String?
+  match Match? @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  scheduledStart DateTime @db.Timestamptz(3)
+  protectedDeadline DateTime @db.Timestamptz(3)
+  reason String
+  policyVersion String
+  status String @default("REQUESTED")
+  requestedAt DateTime @default(now()) @db.Timestamptz(3)
+  completedAt DateTime? @db.Timestamptz(3)
+  expiredAt DateTime? @db.Timestamptz(3)
+  @@index([tournamentId, status])
 }

@@ -1,3 +1,6 @@
+import { assertCurrentPermission } from '@/lib/transaction-authority';
+import { assertTournamentIndependent } from '@/lib/competition-authority';
+import { secureMutation } from '@/lib/secure-route';
 import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
@@ -14,7 +17,7 @@ const schema = z.object({
   winnerTeamId: z.string().min(1),
 });
 
-export async function POST(request: Request, { params }: { params: Promise<{ matchId: string }> }) {
+export const POST = secureMutation(async function POST(request: Request, { params }: { params: Promise<{ matchId: string }> }) {
   try {
     const admin = await requireAdmin();
     const input = schema.safeParse(await request.json().catch(() => null));
@@ -22,8 +25,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ mat
     const { matchId } = await params;
 
     const result = await prisma.$transaction(async (tx) => {
+      await assertCurrentPermission(tx, admin.id, 'ADMIN_DASHBOARD');
       const match = await tx.match.findUnique({ where: { id: matchId }, include: { tournament: true, participants: { include: { player: true } } } });
       if (!match) throw new Error('MATCH_NOT_FOUND');
+      await assertTournamentIndependent(tx, admin.id, match.tournamentId);
       if (match.status !== 'VERIFIED') throw new Error('MATCH_MUST_BE_VERIFIED_BEFORE_LOCK');
       if (![match.teamAId, match.teamBId].includes(input.data.winnerTeamId)) throw new Error('INVALID_WINNER');
       const expectedParticipants = match.tournament.teamSize * 2;
@@ -77,14 +82,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ mat
           await tx.match.update({ where: { id: nextMatch.id }, data: { teamAId: nextTeamAId, teamBId: nextTeamBId, status: nextTeamAId && nextTeamBId ? 'READY' : 'PENDING' } });
         }
       }
+      await writeAudit(tx, { actorId: admin.id, action: 'RESULT_LOCKED', entityType: 'Match', entityId: matchId, matchId, metadata: { teamAScore: input.data.teamAScore, teamBScore: input.data.teamBScore, result: input.data.result, winnerTeamId: input.data.winnerTeamId } });
       return locked;
     }, { timeout: 60000 });
-    await writeAudit({ actorId: admin.id, action: 'RESULT_LOCKED', entityType: 'Match', entityId: matchId, matchId, metadata: input.data });
     return NextResponse.json({ result });
   } catch (error) {
-    console.error('Admin result lock failed', error);
+    console.error('Admin result lock failed');
     if (error instanceof Error && ['MATCH_NOT_FOUND', 'MATCH_MUST_BE_VERIFIED_BEFORE_LOCK', 'INVALID_WINNER', 'MATCH_PARTICIPANT_COUNT_DOES_NOT_MATCH_TOURNAMENT_FORMAT', 'TEAM_PARTICIPANT_COUNT_DOES_NOT_MATCH_TOURNAMENT_FORMAT', 'MATCH_TEAMS_REQUIRED', 'RESULT_ALREADY_LOCKED'].includes(error.message)) return NextResponse.json({ error: error.message }, { status: 409 });
     const result = authError(error);
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
-}
+});

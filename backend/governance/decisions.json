@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Non-executable governance register through final Phase 4 owner decisions; not a retroactive rewrite of historical event rules.",
+  "recordedOn": "2026-10-16",
+  "effectiveAt": null,
+  "historicalApplicability": "No historical tournament, result, rating or rule reference is reinterpreted by this registry.",
+  "sources": {
+    "S1": "First owner implementation prompt, numbered sections; retained in conversation.",
+    "S2": "Second owner governance reconciliation prompt, numbered sections; retained in conversation.",
+    "P1": "Owner approval of revised plan and Phase 1-only instruction; retained in conversation.",
+    "repository Bokh scope": "docs/governance/history/docs/bokh-mode-v1.1.md",
+    "S3": "Owner-confirmed substitution decisions, items 1–8; Phase 1 documentation-only follow-up retained in conversation. Phase 2 requires explicit approval.",
+    "S4": "Owner Phase 4 implementation approval, sections 1–15, retained in conversation; approved mechanics apply prospectively, without rewriting historical rules.",
+    "S5": "Owner Phase 4 final governance implementation approval, sections 1–12, retained in conversation. Prospective final registration/self-attendance/automatic lateness/substitute/byes policies; no Phase 5 or configured Neon migration approval."
+  },
+  "decisions": [
+    {
+      "id": "GOV-001",
+      "status": "APPROVED",
+      "topic": "Authority and history",
+      "decision": "Ikh Zasag and its approved addendum govern; subsequent explicit owner decisions supersede only their resolved subjects. Preserve immutable historical versions and published event rules. No consolidated draft is adopted by this registry.",
+      "source": "S1:3,13,24; S2:13,16",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        1
+      ]
+    },
+    {
+      "id": "GOV-002",
+      "status": "APPROVED",
+      "topic": "Competitive identity",
+      "decision": "One competitive identity; Steam and Discord both linked and verified before hosting or participation. Either provider may sign in; Discord server membership optional. Verification loss blocks new protected actions, not automatic removal. Corrections require documentation and audit.",
+      "source": "S1:4; S2:13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        2
+      ]
+    },
+    {
+      "id": "GOV-003",
+      "status": "APPROVED",
+      "topic": "Hosting",
+      "decision": "Eligible verified players may host, including tournaments that qualify as Grand Battles. Maximum three active hosted tournaments. Hosts may participate but cannot adjudicate their own disputes or invent removal/penalty authority.",
+      "source": "S1:5; S2:1,13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "GOV-004",
+      "status": "SUPERSEDED",
+      "topic": "Old Grand restrictions",
+      "decision": "Earlier administrator-only creation, mandatory Arena Days, invitation-only access and proposed annual Grand limit no longer govern new Grand classification.",
+      "source": "S1:5,18; S2:1,2",
+      "supersededBy": [
+        "GOV-005",
+        "GOV-006"
+      ],
+      "dependsOn": [],
+      "phases": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "GOV-005",
+      "status": "APPROVED",
+      "topic": "Automatic Grand classification",
+      "decision": "At least 64 distinct verified eligible active participating players. Only active starters count; substitutes count only when occupying eligible active starter positions at the snapshot. No manual assignment or override; no administrator creation/approval prerequisite, Arena Day prerequisite, annual limit or extra invitation requirement.",
+      "source": "S2:1,2,4",
+      "supersededBy": [],
+      "dependsOn": [
+        "GOV-008",
+        "GOV-016",
+        "GOV-018"
+      ],
+      "phases": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "GOV-006",
+      "status": "APPROVED",
+      "topic": "Classification lock and rewards",
+      "decision": "Recalculate before lock after withdrawal or eligibility change. Permanently record classification after final check-in and roster lock. Later withdrawals/forfeits do not remove status. Classification alone authorizes no extra NR, badge, token or reward.",
+      "source": "S2:1,13",
+      "supersededBy": [],
+      "dependsOn": [
+        "GOV-008",
+        "GOV-016",
+        "GOV-018"
+      ],
+      "phases": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "GOV-007",
+      "status": "APPROVED",
+      "topic": "Arena Days separate",
+      "decision": "Preserve optional Arena Day concepts/documentation/history separately from Grand classification. Do not automatically activate special rewards or privileges.",
+      "source": "S2:2",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": "GOV-008",
+      "status": "APPROVED",
+      "topic": "Incomplete teams",
+      "decision": "A team must have exactly its required verified eligible self-checked-in active starters. After applicable protections resolve, insufficient starters disqualify the team from starting. Exclude incomplete/disqualified entrants from classification; retain eligible entrants even when their count is not a power of two. This is starting eligibility, not automatic identity revocation or a disciplinary penalty.",
+      "source": "S2:1; S4:4–8; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4
+      ]
+    },
+    {
+      "id": "GOV-009",
+      "status": "APPROVED",
+      "topic": "Formats and capacity",
+      "decision": "Approved formats: 1v1, 2v2, 3v3, 5v5. Approved entrant capacities: 2,4,8,16,32,64. An entrant is an individual in solo and a team otherwise; entrant count is not active-player count.",
+      "source": "S2:3,4",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "GOV-010",
+      "status": "SUPERSEDED",
+      "topic": "Blanket 3v3 deferral",
+      "decision": "3v3 is no longer a deferred-only format. Its competitive activation still requires completed format-specific rules and tests. Preserve historical 3v3 data.",
+      "source": "S1:6,19; S2:3",
+      "supersededBy": [
+        "GOV-011"
+      ],
+      "dependsOn": [],
+      "phases": [
+        3,
+        8
+      ]
+    },
+    {
+      "id": "GOV-011",
+      "status": "APPROVED",
+      "topic": "3v3 readiness",
+      "decision": "Three active starters, captain, verified eligibility, check-in, roster/settings lock, automatic opponents, confirmations, disputes, authorized ranking and audit. Gate competitive activation until remaining rules and tests are complete.",
+      "source": "S2:3",
+      "supersededBy": [],
+      "dependsOn": [
+        "GOV-012"
+      ],
+      "phases": [
+        3,
+        8
+      ]
+    },
+    {
+      "id": "GOV-012",
+      "status": "APPROVED",
+      "topic": "3v3 maximum substitute count",
+      "decision": "3v3 permits at most one optional registered substitute. Register before roster lock; activation into an active position requires valid membership and eligibility. Shared substitution timing and authority remain GOV-038.",
+      "source": "S2:3; S3:1–8; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        4,
+        8
+      ]
+    },
+    {
+      "id": "GOV-013",
+      "status": "APPROVED",
+      "topic": "Floor eligibility",
+      "decision": "Floors 1–2 use Open Bracket only. Lowest floor across participating roster members including substitutes controls style eligibility. Host floor counts only when participating. Re-evaluate after roster changes and before lock/draw. Optional Bokh cultural rank remains separate.",
+      "source": "S1:7; S2:5,13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "GOV-014",
+      "status": "UNRESOLVED",
+      "topic": "Advanced styles",
+      "decision": "Higher-floor unlock thresholds and advanced pairing algorithms remain pending. Preserve concepts/code but gate unsupported competitive operations.",
+      "source": "S2:5",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "GOV-015",
+      "status": "APPROVED",
+      "topic": "Open Bracket",
+      "decision": "Randomized Single Elimination, auditable reproducible committed draw after eligible roster/settings lock. No manual opponents, seed manipulation or host rerolls; safe idempotent retries. Advance eligible official winners; block affected disputed branches while unrelated branches continue safely.",
+      "source": "S1:8; S2:4,13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        5
+      ]
+    },
+    {
+      "id": "GOV-016",
+      "status": "APPROVED",
+      "topic": "Check-in timing",
+      "decision": "Ordinary check-in opens scheduled tournament start minus 15 minutes and closes at scheduled start, enforced by server UTC instants. Only a separately scheduled championship final of an already locked Grand Battle uses minus 30 minutes through final start. No automatic final scheduling. Attendance evidence and exceptions remain subject to GOV-041/GOV-042.",
+      "source": "S2:6; S4:4–8",
+      "supersededBy": [],
+      "dependsOn": [
+        "GOV-041",
+        "GOV-042"
+      ],
+      "phases": [
+        4
+      ]
+    },
+    {
+      "id": "GOV-017",
+      "status": "APPROVED",
+      "topic": "Floor 2 lateness",
+      "decision": "One protected lateness incident per eligible Floor 2 player per tournament, maximum 15 minutes from scheduled start. Apply the authenticated automatic workflow in GOV-042. Floor 1 has no equivalent. No misconduct exemption or unapproved disciplinary consequences.",
+      "source": "S1:10; S2:8; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4
+      ]
+    },
+    {
+      "id": "GOV-018",
+      "status": "APPROVED",
+      "topic": "Lateness trigger and finalization",
+      "decision": "Protection starts at scheduled tournament/match start and ends 15 minutes later, inclusive for timely personal check-in. Do not disqualify an incomplete team while a necessary eligible player can still use protection. Resolve or expire requests before final eligibility and classification; share one incident across contexts.",
+      "source": "S2:6,8; S4:4–8; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4
+      ]
+    },
+    {
+      "id": "GOV-019",
+      "status": "APPROVED",
+      "topic": "5v5 rosters and substitutions",
+      "decision": "Five active starters and at most one optional registered substitute. Apply shared roster lock, timing, membership and class-dependent approval rules in GOV-038. No new post-lock substitute or between-map substitution.",
+      "source": "S1:11; S2:13; S3:1–8; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4,
+        8
+      ]
+    },
+    {
+      "id": "GOV-020",
+      "status": "APPROVED",
+      "topic": "Result confirmation",
+      "decision": "Both authorized captains, or both 1v1 competitors, have 15 minutes after submission to confirm/dispute. Agreement triggers server validation; disagreement triggers independent referee review; silence stays pending independent verification, never agreement/cheating/forfeit. Preserve history; claim only substantiated checks.",
+      "source": "S1:12; S2:7",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        6
+      ]
+    },
+    {
+      "id": "GOV-021",
+      "status": "SUPERSEDED",
+      "topic": "Routine admin result approval",
+      "decision": "Earlier mandatory routine administrator result verification is superseded by agreement followed by server validation. Independent review remains required when appropriate.",
+      "source": "S1:12; S2:7",
+      "supersededBy": [
+        "GOV-020"
+      ],
+      "dependsOn": [],
+      "phases": [
+        6
+      ]
+    },
+    {
+      "id": "GOV-022",
+      "status": "APPROVED",
+      "topic": "Disputes and appeal filing",
+      "decision": "Ordinary match disputes: 30 minutes after official result notification. Disciplinary appeals: Levels I–II 24 hours; III–V 72 hours after decision notification.",
+      "source": "S1:13; S2:7",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-023",
+      "status": "APPROVED",
+      "topic": "Ordinary disciplinary appeal",
+      "decision": "One ordinary appeal per disciplinary decision, different independent authorized reviewer, no self/conflicted adjudication. Escalate if no eligible independent reviewer; preserve evidence and response rights.",
+      "source": "S2:10",
+      "supersededBy": [],
+      "dependsOn": [
+        "GOV-024"
+      ],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-024",
+      "status": "UNRESOLVED",
+      "topic": "Appeal assignment and reopening",
+      "decision": "Detailed reviewer-assignment hierarchy and exceptional reopening procedure require specification. Do not invent appellate authority or automatic contested-case finality.",
+      "source": "S2:10",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-025",
+      "status": "APPROVED",
+      "topic": "Service targets",
+      "decision": "Previously approved proposed service targets: ordinary appeal decisions 48 hours; serious disciplinary appeal decisions 7 days. Targets are not automatic rejection deadlines.",
+      "source": "S1:13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-026",
+      "status": "APPROVED",
+      "topic": "Discipline and authority",
+      "decision": "Report, preserve evidence, independent review, response, decision, authorized consequence. Referees: rule-authorized I–II; administrators: III–V. Escalate serious misconduct. Allegations are not proven violations; preserve dismissed/insufficient-evidence states. No arbitrary ranking edits or bracket manipulation.",
+      "source": "S1:14,15; S2:10,13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        2,
+        7
+      ]
+    },
+    {
+      "id": "GOV-027",
+      "status": "APPROVED",
+      "topic": "Disciplinary privacy",
+      "decision": "Case details/evidence/decisions restricted to involved parties and authorized reviewers with appropriate limits. Public disciplinary reporting deferred; public outcomes need not expose allegations.",
+      "source": "S1:16; S2:7,13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-028",
+      "status": "APPROVED",
+      "topic": "Level V restriction",
+      "decision": "Authorized administrator adjudication plus platform-owner approval; only specifically designated revocable achievement/honor badges. No arbitrary rank-history erasure or historical-result rewrite without separate authorized correction.",
+      "source": "S2:11",
+      "supersededBy": [],
+      "dependsOn": [
+        "GOV-029"
+      ],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-029",
+      "status": "UNRESOLVED",
+      "topic": "Revocable badge catalog",
+      "decision": "Exact revocable badge types remain pending; no execution against undefined types.",
+      "source": "S2:11",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-030",
+      "status": "APPROVED",
+      "topic": "Rating finality",
+      "decision": "Preserve NR formula, nine ranks/emblems and historical transactions. Official result is distinct from final settlement. Finality only after applicable disputes/appeals are satisfied; unresolved result-affecting cases block settlement. Idempotent writes and auditable reversible corrections; no Grand multipliers.",
+      "source": "S2:9",
+      "supersededBy": [],
+      "dependsOn": [
+        "GOV-031"
+      ],
+      "phases": [
+        6,
+        7,
+        10
+      ]
+    },
+    {
+      "id": "GOV-031",
+      "status": "UNRESOLVED",
+      "topic": "Delayed settlement mechanics",
+      "decision": "Specify rating-input snapshot/order and effects of authorized corrections on dependent settlements where existing authority is insufficient. Preserve existing formula; do not silently choose new calculation semantics.",
+      "source": "S2:9; P1:accepted plan D",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        7
+      ]
+    },
+    {
+      "id": "GOV-032",
+      "status": "APPROVED",
+      "topic": "Free-entry competitive MVP",
+      "decision": "No paid entry, player-funded staking, wagering, cash-equivalent rewards, automatic token confiscation or unapproved financial settlement. Preserve economy prototypes without presenting unsupported finance as active. Paid/staked formats need separate approved governance and financial specifications.",
+      "source": "S2:12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        9
+      ]
+    },
+    {
+      "id": "GOV-033",
+      "status": "APPROVED",
+      "topic": "Automatic fair byes",
+      "decision": "When disqualification leaves a non-power-of-two eligible field, Phase 5 will generate fair automatic byes using auditable, reproducible random seeding. Do not generate brackets or implement a seeding algorithm in Phase 4.",
+      "source": "S1:8; S2:4; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4,
+        5
+      ]
+    },
+    {
+      "id": "GOV-034",
+      "status": "APPROVED",
+      "topic": "Registration and preservation",
+      "decision": "Close at capacity or scheduled start minus 15 minutes, whichever comes first; eligible pre-lock withdrawals may reopen places only before the closing deadline. Preserve data, histories, IDs, design and ranking. Do not apply configured database migrations, deploy, push or start Phase 5 without separate approval.",
+      "source": "S1:3,9,24; S2:16; P1; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        4,
+        10
+      ]
+    },
+    {
+      "id": "GOV-035",
+      "status": "UNRESOLVED",
+      "topic": "Arena Day special benefits",
+      "decision": "Optional special-event privileges/rewards need separate approval; no invented schedule, qualification claim or countdown. This is not a Grand Battle annual-limit blocker.",
+      "source": "S2:2",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        9
+      ]
+    },
+    {
+      "id": "GOV-036",
+      "status": "APPROVED",
+      "topic": "Optional Bokh identity",
+      "decision": "Separate opt-in cultural identity/rank; preserve main skill rank, floors, wallet and history. Consensual mode challenges do not authorize regular tournament opponent assignment. No invented progression tiers, decline penalties or economic rates.",
+      "source": "S1:7; repository Bokh scope",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        1,
+        9
+      ]
+    },
+    {
+      "id": "GOV-037",
+      "status": "APPROVED",
+      "topic": "Server security",
+      "decision": "Server-side validation/authorization, ownership and conflict checks, transactional locks, idempotent draw/result/rating writes, audit trails, secure private evidence, rate limits, safe errors and no sensitive public logs. Disabled buttons are not authorization.",
+      "source": "S1:20; S2:13",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        2,
+        4,
+        5,
+        6,
+        7,
+        10
+      ]
+    },
+    {
+      "id": "GOV-038",
+      "status": "APPROVED",
+      "topic": "Shared team substitute rules",
+      "decision": "All team formats allow at most one optional substitute, registered before roster lock. No new substitute after lock; teams locked without one continue without one. Only an already registered eligible substitute may occupy an active slot. Preserve post-lock changes only between completed matches with independent authorized referee approval for ordinary tournaments or authorized administrator approval for locked Grand Battles; never during a match or between BO3 maps.",
+      "source": "S3:1–8; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        4,
+        8
+      ]
+    },
+    {
+      "id": "GOV-039",
+      "status": "APPROVED",
+      "topic": "2v2 maximum substitute count",
+      "decision": "2v2 permits at most one optional registered substitute, registered before roster lock. Shared substitution timing and authority remain GOV-038.",
+      "source": "S3:1,8; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        3,
+        4,
+        8
+      ]
+    },
+    {
+      "id": "GOV-040",
+      "status": "APPROVED",
+      "topic": "Disqualification and bracket readiness",
+      "decision": "Non-power-of-two eligible fields may be locked after disqualification without arbitrarily eliminating eligible entrants. Phase 5 owns reproducible random seeding and automatic fair byes; classification counts all eligible active starters.",
+      "source": "S4:3,6,8,13; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4
+      ]
+    },
+    {
+      "id": "GOV-041",
+      "status": "APPROVED",
+      "topic": "Player self-attendance",
+      "decision": "Ordinary registered players personally confirm attendance through authenticated self-check-in; no referee or captain confirmation. Registration does not imply attendance. Successful check-in is idempotent, timestamped and audited, and represents player confirmation rather than independently verified physical presence.",
+      "source": "S4:3,6,8,13; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4
+      ]
+    },
+    {
+      "id": "GOV-042",
+      "status": "APPROVED",
+      "topic": "Automatic Floor 2 lateness approval",
+      "decision": "An eligible Floor 2 player with an unused per-tournament incident personally submits a non-empty reason and completes authenticated check-in no later than scheduled tournament/match start plus 15 minutes. Automatically approve and consume once atomically with attendance/audit. Expired unsuccessful requests do not consume the incident. Prevent concurrent/replayed consumption across tournament/match contexts. No unapproved disciplinary consequences; unsupported match-specific execution remains gated.",
+      "source": "S4:3,6,8,13; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4
+      ]
+    },
+    {
+      "id": "GOV-043",
+      "status": "APPROVED",
+      "topic": "Registration closing deadline",
+      "decision": "Registration closes exactly scheduled tournament start minus 15 minutes, enforced by server time. Reject registration at or after that closing instant; registration and attendance remain separate. Preserve capacity, duplicate and authorization protections.",
+      "source": "S4:3,6,8,13; S5:1–12",
+      "supersededBy": [],
+      "dependsOn": [],
+      "phases": [
+        4
+      ]
+    }
+  ]
+}

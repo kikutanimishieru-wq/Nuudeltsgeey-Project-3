@@ -1,3 +1,7 @@
+import { assertTournamentOperationAvailable } from '@/lib/tournament-activation';
+import { assertCurrentPermission } from '@/lib/transaction-authority';
+import { assertTournamentIndependent } from '@/lib/competition-authority';
+import { secureMutation } from '@/lib/secure-route';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
@@ -9,7 +13,7 @@ const schema = z.object({
   placements: z.array(z.object({ playerId: z.string().uuid(), kind: z.enum(['PARTICIPATION', 'CHAMPION', 'RUNNER_UP', 'SEMIFINALIST']) })).min(1),
 });
 
-export async function POST(request: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
+export const POST = secureMutation(async function POST(request: Request, { params }: { params: Promise<{ tournamentId: string }> }) {
   try {
     const admin = await requireAdmin();
     const input = schema.safeParse(await request.json().catch(() => null));
@@ -21,13 +25,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ tou
     const eligiblePlayers = new Set(tournament.registrations.flatMap((registration) => registration.roster.map((member) => member.playerId)));
     if (input.data.placements.some((placement) => !eligiblePlayers.has(placement.playerId))) return NextResponse.json({ error: 'AWARD_PLAYER_NOT_IN_TOURNAMENT_ROSTER' }, { status: 409 });
     const result = await prisma.$transaction(async (tx) => {
+      await assertCurrentPermission(tx, admin.id, 'ADMIN_DASHBOARD');
+      await assertTournamentOperationAvailable(tx, tournamentId, false);
+      await assertTournamentIndependent(tx, admin.id, tournamentId);
       await awardTournamentResults(tx, tournamentId, input.data.placements);
-      return tx.tournament.update({ where: { id: tournamentId }, data: { status: 'COMPLETED' }, select: { id: true, status: true } });
+      const completed = await tx.tournament.update({ where: { id: tournamentId }, data: { status: 'COMPLETED' }, select: { id: true, status: true } });
+      await writeAudit(tx, { actorId: admin.id, action: 'TOURNAMENT_COMPLETED', entityType: 'Tournament', entityId: tournamentId, tournamentId, metadata: { placementCount: input.data.placements.length } });
+      return completed;
     });
-    await writeAudit({ actorId: admin.id, action: 'TOURNAMENT_COMPLETED', entityType: 'Tournament', entityId: tournamentId, tournamentId, metadata: { placements: input.data.placements } });
     return NextResponse.json({ tournament: result });
   } catch (error) {
     const result = authError(error);
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
-}
+});

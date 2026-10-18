@@ -1,0 +1,15 @@
+{
+  "P4-N01": "serializes service registrations at the last capacity slot with atomic audit",
+  "P4-N02": "rejects duplicate participation across teams in direct concurrent transactions",
+  "P4-N03": "requires verified eligible identities and enforces optional substitute limits for 2v2/3v3/5v5",
+  "P4-N04": "requires self-check-in and makes concurrent duplicate check-ins idempotent",
+  "P4-N05": "consumes one Floor 2 incident under concurrent late check-ins and rejects Floor 1 protection",
+  "P4-N06": "does not consume protection after expiry",
+  "P4-N07": "serializes finalization racing with a protected late arrival",
+  "P4-N08": "locks exactly 63 eligible starters and derives classification automatically",
+  "P4-N09": "locks exactly 64 eligible starters and derives classification automatically",
+  "P4-N10": "produces a real SERIALIZABLE conflict and retries only the aborted transaction",
+  "P4-N11": "enforces capacity for direct writes and rejects fabricated snapshot counts",
+  "P4-N12": "excludes optional bench players and rejects a participating referee",
+  "P4-N13": "rejects late registration racing with roster locking without changing the frozen field"
+}

@@ -1,6 +1,8 @@
+import { secureMutation } from '@/lib/secure-route';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { writeAudit } from '@/lib/audit';
 import { authError, requireUser } from '@/lib/session';
 
 const schema = z.object({ name: z.string().trim().min(2).max(60), tag: z.string().trim().min(2).max(8).optional(), cafeId: z.string().uuid().optional() });
@@ -11,7 +13,7 @@ export async function GET(request: Request) {
   return NextResponse.json({ teams });
 }
 
-export async function POST(request: Request) {
+export const POST = secureMutation(async function POST(request: Request) {
   try {
     const user = await requireUser();
     if (!user.profile) return NextResponse.json({ error: 'PLAYER_PROFILE_REQUIRED' }, { status: 409 });
@@ -21,6 +23,7 @@ export async function POST(request: Request) {
       const created = await tx.team.create({ data: { name: input.data.name, tag: input.data.tag, cafeId: input.data.cafeId, captainId: user.profile!.id } });
       await tx.teamMembership.create({ data: { teamId: created.id, playerId: user.profile!.id, isStarter: true } });
       await tx.playerProfile.update({ where: { id: user.profile!.id }, data: { currentTeamId: created.id } });
+      await writeAudit(tx, { actorId: user.id, action: 'TEAM_CREATED', entityType: 'Team', entityId: created.id });
       return created;
     });
     return NextResponse.json({ team }, { status: 201 });
@@ -28,4 +31,4 @@ export async function POST(request: Request) {
     const result = authError(error);
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
-}
+});
