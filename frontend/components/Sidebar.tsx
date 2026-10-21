@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AuthNavigation } from './onboarding/AuthNavigation';
 
 const links = [
   ['overview', '◈', 'Overview', '/'], ['tournaments', '⚑', 'Tournaments', '/tournaments'],
@@ -16,6 +17,6 @@ export default function Sidebar({ page = 'Overview', open, onNavigate }: { page?
     <div className="region"><span className="live" />MONGOLIA<span>MN ↗</span></div>
     <div className="nav-label">THE ARENA</div>
     <nav className="side-nav">{links.slice(0, 5).map(([key, icon, label, href]) => <Link className={active === key ? 'active' : ''} href={href} onClick={onNavigate} key={key}><b>{icon}</b> {label}{key === 'tournaments' && <small>03</small>}</Link>)}<div className="nav-label">YOUR IDENTITY</div>{links.slice(5).map(([key, icon, label, href]) => <Link className={active === key ? 'active' : ''} href={href} onClick={onNavigate} key={key}><b>{icon}</b> {label}</Link>)}</nav>
-    <div className="sidebar-bottom"><div className="season-card"><span className="eyebrow">THE NEXT CHAPTER</span><h3>A new season.<br />A new legacy.</h3><p>Nuudeltsgeey Season 01 is live.</p><Link href="/leaderboard" onClick={onNavigate}>Explore the ladder ↗</Link></div><Link className="account" href="/badge" onClick={onNavigate}><span className="avatar">B</span><span><b>BATU</b><small>Floor 01 · Шинэ дайчин</small></span><span>⌃</span></Link></div>
+    <div className="sidebar-bottom"><div className="season-card"><span className="eyebrow">THE NEXT CHAPTER</span><h3>A new season.<br />A new legacy.</h3><p>Nuudeltsgeey Season 01 is live.</p><Link href="/leaderboard" onClick={onNavigate}>Explore the ladder ↗</Link></div><AuthNavigation sidebar onNavigate={onNavigate} /></div>
   </aside>;
 }

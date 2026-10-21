@@ -12,16 +12,22 @@ const budgets = require('./phase4-budgets.cjs');
 const duplicate = require('./phase4-duplicate-check.cjs');
 const SafeReporter = require('./phase4-reporter.cjs');
 const duplicateSql = require('./phase4-duplicate-sql.cjs');
-const branch = 'br-morning-queen-b5u7j4qz';
+// Project rough-snow-56584532 is checked live by the shared launcher guard.
+const branch = 'br-withered-mode-b528hnhk';
+const endpoint = 'ep-delicate-poetry-b5bbwllj';
+const hostname = endpoint + '.c-7.us-east-2.aws.neon.tech';
+const expiresAt = '2026-10-26T09:48:09Z';
+const rejectedBranches = new Set(['br-wispy-mountain-b5nku4bf', 'br-plain-glitter-b5cadax8', 'br-morning-queen-b5u7j4qz']);
+if (rejectedBranches.has(process.env.PHASE4_NATIVE_AUTHORIZED ?? '')) throw Error('NATIVE_TARGET_REJECTED');
 const url = process.env.PHASE4_VALIDATION_DATABASE_URL;
 if (process.env.PHASE4_NATIVE_AUTHORIZED !== branch || !url) throw Error('NATIVE_EXECUTION_NOT_AUTHORIZED');
 const parsed = new URL(url);
-if (parsed.hostname !== 'ep-still-rain-b55chfrd.c-7.us-east-2.aws.neon.tech' || parsed.pathname !== '/neondb' || parsed.username !== 'neondb_owner' || parsed.searchParams.get('sslmode') !== 'require' || parsed.searchParams.get('sslaccept') !== 'strict') throw Error('NATIVE_TARGET_REJECTED');
+if (parsed.hostname !== hostname || parsed.pathname !== '/neondb' || parsed.username !== 'neondb_owner' || parsed.searchParams.get('sslmode') !== 'require' || parsed.searchParams.get('sslaccept') !== 'strict') throw Error('NATIVE_TARGET_REJECTED');
 const run = process.env.PHASE4_RUN_ID!;
 if (!/^p4_[a-f0-9]{16}$/.test(run)) throw Error('NATIVE_RUN_ID_REQUIRED');
 function unexpired() {
   const expiry = Date.parse(process.env.PHASE4_EXPIRES_AT ?? '');
-  if (!Number.isFinite(expiry) || expiry - Date.now() < 600000) throw Error('NATIVE_BRANCH_EXPIRY');
+  if (!Number.isFinite(expiry) || expiry !== Date.parse(expiresAt) || expiry - Date.now() < 600000) throw Error('NATIVE_BRANCH_EXPIRY');
 }
 const clients = Array.from({ length: 3 }, () => new PrismaClient({ datasources: { db: { url } }, log: [] }));
 const db = clients[0];

@@ -15,34 +15,19 @@ beforeEach(() => {
   mocks.transaction.mockImplementation(async fn => fn({ $queryRaw: vi.fn(), user: { findUnique: mocks.user }, identityChallenge: { create: mocks.challenge }, auditEvent: { create: mocks.audit } }));
 });
 describe('fresh authentication for identity linking', () => {
-  it.each([{}, { password: 'wrong' }])('rejects a valid session without the correct current password', async input => {
-    const response = await POST(request({ intent: 'LINK', ...input }), context);
-    expect(response.status).toBe(401); expect(mocks.challenge).not.toHaveBeenCalled();
-    expect(await response.text()).not.toContain('private-hash');
-  });
-  it('records server-side fresh proof only for the current session account', async () => {
+  it.each([{}, {password:'wrong'}, {password:'correct'}])('blocks all linking starts until persistent revocation is available',async input=>{
     mocks.compare.mockResolvedValue(true);
-    const response = await POST(request({ intent: 'LINK', password: 'correct', userId: 'attacker-target', reauthenticatedAt: '2099-01-01' }), context);
-    expect(response.status).toBe(200);
-    const data = mocks.challenge.mock.calls[0][0].data;
-    expect(data.userId).toBe('session-user'); expect(data.reauthenticatedAt).toBeInstanceOf(Date);
-    expect(data.reauthenticatedAt.getTime()).toBeLessThanOrEqual(Date.now());
-    expect(data.expiresAt.getTime() - data.reauthenticatedAt.getTime()).toBeLessThanOrEqual(300100);
-    expect(JSON.stringify(mocks.audit.mock.calls)).not.toContain('correct');
-  });
-  it('rejects a concurrent password change before issuing the challenge', async () => {
-    mocks.compare.mockResolvedValue(true);
-    mocks.user.mockResolvedValueOnce({ passwordHash: 'old-hash', accountStatus: 'ACTIVE' }).mockResolvedValueOnce({ passwordHash: 'new-hash', accountStatus: 'ACTIVE' });
-    expect((await POST(request({ intent: 'LINK', password: 'old-password' }), context)).status).toBe(401);
-    expect(mocks.challenge).not.toHaveBeenCalled();
+    const response=await POST(request({intent:'LINK',...input}),context);
+    expect(response.status).toBe(503);expect(await response.json()).toEqual({error:'LINK_AUTHORIZATION_GENERATION_REQUIRED'});
+    expect(mocks.compare).not.toHaveBeenCalled();expect(mocks.challenge).not.toHaveBeenCalled();expect(mocks.transaction).not.toHaveBeenCalled();
   });
   it('rejects missing, old or future authentication timestamps, including legacy challenges', () => {
     const now = new Date();
     for (const date of [null, new Date(now.getTime() - 300001), new Date(now.getTime() + 1)]) expect(() => assertFreshLinkAuthentication(date, now)).toThrow('FRESH_AUTHENTICATION_REQUIRED');
     expect(() => assertChallenge({ provider: 'STEAM', intent: 'LINK', expiresAt: new Date(Date.now() + 60000), consumedAt: null }, 'STEAM')).toThrow('FRESH_AUTHENTICATION_REQUIRED');
   });
-  it('keeps provider sign-in separate from linking without requiring a password', async () => {
-    expect((await POST(request({ intent: 'SIGN_IN' }), context)).status).toBe(200);
-    expect(mocks.compare).not.toHaveBeenCalled(); expect(mocks.challenge.mock.calls[0][0].data.userId).toBeUndefined();
+  it('rejects Steam sign-in before challenge creation', async () => {
+    expect((await POST(request({ intent: 'SIGN_IN' }), context)).status).toBe(403);
+    expect(mocks.compare).not.toHaveBeenCalled(); expect(mocks.challenge).not.toHaveBeenCalled();
   });
 });

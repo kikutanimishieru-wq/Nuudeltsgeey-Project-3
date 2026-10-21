@@ -1,0 +1,952 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "handoff",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "session",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_200"
+        ],
+        "checks": [
+          "no_store",
+          "proof_accepted"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "forged-proof",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "X-Nuudel-Ingress-Proof",
+            "forged"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "spoof-x-forwarded-host",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "X-Forwarded-Host",
+            "spoof"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "spoof-x-forwarded-for",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "X-Forwarded-For",
+            "spoof"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "spoof-x-forwarded-proto",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "X-Forwarded-Proto",
+            "spoof"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "spoof-forwarded",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "Forwarded",
+            "spoof"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "duplicate-host",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "Host",
+            "localhost:3002"
+          ],
+          [
+            "Host",
+            "localhost:3002"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400",
+          "CONNECTION_CLOSED"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "duplicate-origin",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "POST",
+        "target": "/api/auth/login",
+        "headers": [
+          [
+            "Origin",
+            "http://localhost:3002"
+          ],
+          [
+            "Origin",
+            "http://localhost:3002"
+          ]
+        ],
+        "body": "{}"
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400",
+          "CONNECTION_CLOSED"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "bad-metadata",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "Sec-Fetch-Site",
+            "same-origin, cross-site"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "target-dot",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/../auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "target-encoded",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth%2fsession",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "target-double",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api//auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "query",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/identity/discord/callback?state=mock&code=a%2Bb&code=second",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "query",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_200"
+        ],
+        "checks": [
+          "no_store",
+          "target_exact"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "method",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "DELETE",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "body-limit",
+      "phase": "A",
+      "operation": "oversized-body",
+      "request": {
+        "method": "POST",
+        "target": "/api/register",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400",
+          "HTTP_413"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "framing",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "POST",
+        "target": "/api/register",
+        "headers": [
+          [
+            "Transfer-Encoding",
+            "chunked"
+          ],
+          [
+            "Content-Length",
+            "2"
+          ]
+        ],
+        "body": "{}"
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400",
+          "CONNECTION_CLOSED"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "slow-headers",
+      "phase": "A",
+      "operation": "stall-headers",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "CONNECTION_CLOSED",
+          "HTTP_408"
+        ],
+        "checks": [
+          "deadline_observed"
+        ]
+      },
+      "deadline_seconds": 18
+    },
+    {
+      "id": "slow-body",
+      "phase": "A",
+      "operation": "stall-body",
+      "request": {
+        "method": "POST",
+        "target": "/api/register",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_408",
+          "CONNECTION_CLOSED",
+          "HTTP_504"
+        ],
+        "checks": [
+          "deadline_observed"
+        ]
+      },
+      "deadline_seconds": 18
+    },
+    {
+      "id": "cookies",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "cookies",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_200"
+        ],
+        "checks": [
+          "no_store",
+          "cookies_separate",
+          "cookie_attributes"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "login",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "POST",
+        "target": "/api/auth/login",
+        "headers": [],
+        "body": "{\"email\":\"player@example.invalid\",\"password\":\"synthetic-only-password\"}"
+      },
+      "scenario": "login",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_200"
+        ],
+        "checks": [
+          "no_store",
+          "synthetic_cookie_set"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "session",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "session",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_200"
+        ],
+        "checks": [
+          "no_store",
+          "synthetic_session"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "logout",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "POST",
+        "target": "/api/auth/logout",
+        "headers": [],
+        "body": "{}"
+      },
+      "scenario": "logout",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_200"
+        ],
+        "checks": [
+          "no_store",
+          "synthetic_cookie_deleted"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "safe-redirect",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/identity/steam/callback?state=mock",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "safe_redirect",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_307"
+        ],
+        "checks": [
+          "no_store",
+          "canonical_location"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "unsafe-redirect",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/identity/steam/callback?state=mock",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "unsafe_redirect",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_502"
+        ],
+        "checks": [
+          "no_store",
+          "no_external_follow"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "timeout",
+      "phase": "A",
+      "operation": "timeout",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "timeout",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_504"
+        ],
+        "checks": [
+          "no_store",
+          "upstream_cancelled"
+        ]
+      },
+      "deadline_seconds": 18
+    },
+    {
+      "id": "reject-stream",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/identity/steam/callback?state=mock",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "reject_stream",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_502"
+        ],
+        "checks": [
+          "no_store",
+          "upstream_cancelled",
+          "no_external_follow"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "upgrade",
+      "phase": "A",
+      "operation": "upgrade",
+      "request": {
+        "method": "GET",
+        "target": "/_next/webpack-hmr",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "CONNECTION_CLOSED"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "disconnect",
+      "phase": "A",
+      "operation": "disconnect-after-barrier",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "disconnect",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "CLIENT_DISCONNECTED"
+        ],
+        "checks": [
+          "upstream_cancelled"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "network-failure",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "network_failure",
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_502"
+        ],
+        "checks": [
+          "no_store"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "wrong-host",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "Host",
+            "evil.invalid"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "deadline_seconds": 5,
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      }
+    },
+    {
+      "id": "wrong-origin",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "POST",
+        "target": "/api/register",
+        "headers": [
+          [
+            "Origin",
+            "https://evil.invalid"
+          ]
+        ],
+        "body": "{}"
+      },
+      "scenario": "json",
+      "deadline_seconds": 5,
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      }
+    },
+    {
+      "id": "duplicate-length",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "POST",
+        "target": "/api/register",
+        "headers": [
+          [
+            "Content-Length",
+            "2"
+          ],
+          [
+            "Content-Length",
+            "2"
+          ]
+        ],
+        "body": "{}"
+      },
+      "scenario": "json",
+      "deadline_seconds": 5,
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400",
+          "CONNECTION_CLOSED"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      }
+    },
+    {
+      "id": "standalone-transfer",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "POST",
+        "target": "/api/register",
+        "headers": [
+          [
+            "Transfer-Encoding",
+            "chunked"
+          ]
+        ],
+        "body": "0\r\n\r\n"
+      },
+      "scenario": "json",
+      "deadline_seconds": 5,
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_400",
+          "CONNECTION_CLOSED"
+        ],
+        "checks": [
+          "connection_closed"
+        ]
+      }
+    },
+    {
+      "id": "unknown-route",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/not-reviewed",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "deadline_seconds": 5,
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_404"
+        ],
+        "checks": [
+          "no_store"
+        ]
+      }
+    },
+    {
+      "id": "response-overflow",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "overflow",
+      "deadline_seconds": 5,
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_413"
+        ],
+        "checks": [
+          "no_store",
+          "upstream_cancelled"
+        ]
+      }
+    },
+    {
+      "id": "post-logout-session",
+      "phase": "A",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "session",
+      "deadline_seconds": 5,
+      "expected": {
+        "upstream_requests": 1,
+        "response": [
+          "HTTP_200"
+        ],
+        "checks": [
+          "no_store",
+          "signed_out_session"
+        ]
+      }
+    },
+    {
+      "id": "missing-proof",
+      "phase": "B",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_403"
+        ],
+        "checks": [
+          "no_store",
+          "ingress_required"
+        ]
+      },
+      "deadline_seconds": 5
+    },
+    {
+      "id": "ordinary-forged-proof",
+      "phase": "B",
+      "operation": "request",
+      "request": {
+        "method": "GET",
+        "target": "/api/auth/session",
+        "headers": [
+          [
+            "X-Nuudel-Ingress-Proof",
+            "forged"
+          ]
+        ],
+        "body": null
+      },
+      "scenario": "json",
+      "expected": {
+        "upstream_requests": 0,
+        "response": [
+          "HTTP_403"
+        ],
+        "checks": [
+          "no_store",
+          "ingress_required"
+        ]
+      },
+      "deadline_seconds": 5
+    }
+  ]
+}

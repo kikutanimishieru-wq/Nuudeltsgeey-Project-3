@@ -1,3 +1,6 @@
+import { persistentSessionsEnabled, sessionTransactionAdapter } from './session-runtime';
+import { issueSession } from './persistent-session';
+import { assertDiscordSignIn, assertSignInAccount } from './discord-accounts';
 import { hasAdministrativeHold } from './identity-policy';
 export { hasAdministrativeHold } from './identity-policy';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
@@ -19,6 +22,7 @@ export function assertChallenge(challenge: { provider: string; intent: string; e
   if (!challenge || challenge.provider !== provider || !['LINK', 'SIGN_IN'].includes(challenge.intent) || challenge.consumedAt || challenge.expiresAt <= now) {
     throw new SecurityError('INVALID_IDENTITY_STATE', 400);
   }
+  if (challenge.intent === 'SIGN_IN') assertDiscordSignIn(provider);
   if (challenge.intent === 'LINK') assertFreshLinkAuthentication(challenge.reauthenticatedAt, now);
 }
 export function assertFreshLinkAuthentication(authenticatedAt: Date | null | undefined, now = new Date()) {
@@ -31,7 +35,7 @@ export async function lockIdentityUser(tx: Prisma.TransactionClient, userId: str
 export async function attachVerifiedIdentity(tx: Prisma.TransactionClient, userId: string, provider: Provider, subject: string) {
   await lockIdentityUser(tx, userId);
   const user = await tx.user.findUnique({ where: { id: userId }, select: { accountStatus: true } });
-  if (!user || ['SUSPENDED', 'BADGE_REVOKED'].includes(user.accountStatus)) throw new SecurityError('FORBIDDEN');
+  if (!user || ['SUSPENDED', 'BADGE_REVOKED', 'UNDER_REVIEW'].includes(user.accountStatus)) throw new SecurityError('FORBIDDEN');
   const existing = await tx.externalIdentity.findUnique({ where: { userId_provider: { userId, provider } } });
   const claimed = await tx.externalIdentity.findUnique({ where: { provider_providerAccountId: { provider, providerAccountId: subject } } });
   if ((existing && existing.providerAccountId !== subject) || (claimed && claimed.userId !== userId)) throw new SecurityError('IDENTITY_REQUIRES_REVIEW', 409);
@@ -44,17 +48,32 @@ export async function attachVerifiedIdentity(tx: Prisma.TransactionClient, userI
   await writeAudit(tx, { actorId: userId, action: 'IDENTITY_VERIFIED', entityType: 'User', entityId: userId, metadata: { provider, reverified: Boolean(existing) } });
 }
 export async function consumeLoginGrant(ticket: string, browserSecret: string | undefined) {
-  if (!/^[A-Za-z0-9_-]{43}$/.test(ticket)) return null;
+  if (!/^[A-Za-z0-9_-]{43}$/.test(ticket) || !browserSecret) return null;
   return prisma.$transaction(async tx => {
+    if (persistentSessionsEnabled()) {
+      // Discovery is non-authoritative. The proposed adapter locks User first,
+      // then conditionally rechecks/consumes the generation-bound grant.
+      const discovery = await tx.identityLoginGrant.findUnique({where:{tokenHash:digest(ticket)}});
+      if (!discovery || discovery.provider !== 'DISCORD') return null;
+      const adapter = sessionTransactionAdapter(tx); // Unavailable until schema/client review.
+      const account = await adapter.lockAccount(discovery.userId);
+      if (!account) return null;
+      const sessionCore = await issueSession(adapter,{userId:account.id,expectedGeneration:account.generation,method:'DISCORD',ticketHash:digest(ticket),browserHash:digest(browserSecret??'')});
+      const user = await tx.user.findUnique({where:{id:account.id},select:{id:true,email:true,role:true,accountStatus:true,publicNmdId:true}});
+      if (!user) throw new SecurityError('SESSION_ACCOUNT_MISSING',409);
+      return {...user,sessionCore};
+    }
     const grant = await tx.identityLoginGrant.findUnique({ where: { tokenHash: digest(ticket) } });
-    if (!grant || grant.consumedAt || grant.expiresAt <= new Date()) return null;
+    if (!grant || grant.provider !== 'DISCORD' || grant.consumedAt || grant.expiresAt <= new Date()) return null;
     assertBrowserSecret(browserSecret, grant.browserHash);
     const claimed = await tx.identityLoginGrant.updateMany({ where: { tokenHash: grant.tokenHash, consumedAt: null, expiresAt: { gt: new Date() } }, data: { consumedAt: new Date() } });
     if (claimed.count !== 1) return null;
     await lockIdentityUser(tx, grant.userId);
     const user = await tx.user.findUnique({ where: { id: grant.userId }, select: { id: true, email: true, role: true, accountStatus: true, publicNmdId: true } });
     const identity = await tx.externalIdentity.findUnique({ where: { userId_provider: { userId: grant.userId, provider: grant.provider } } });
-    if (!user || ['SUSPENDED', 'BADGE_REVOKED'].includes(user.accountStatus) || !identity || identity.revokedAt || hasAdministrativeHold(identity)) return null;
+    if (!user || ['SUSPENDED', 'BADGE_REVOKED', 'UNDER_REVIEW'].includes(user.accountStatus) || !identity || identity.revokedAt || hasAdministrativeHold(identity)) return null;
+    if (grant.expiresAt <= new Date()) return null;
+    assertSignInAccount(user.accountStatus);
     await writeAudit(tx, { actorId: user.id, action: 'PROVIDER_SIGN_IN', entityType: 'User', entityId: user.id, metadata: { provider: grant.provider } });
     return user;
   });

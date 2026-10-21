@@ -2,7 +2,7 @@
 
 Owner approval is required before invoking the execution script. Preparation is not approval.
 
-Target: project `rough-snow-56584532`, branch `br-morning-queen-b5u7j4qz`, direct endpoint `ep-still-rain-b55chfrd`, database `neondb`, role `neondb_owner`.
+Target: project `rough-snow-56584532`, branch `br-withered-mode-b528hnhk`, direct endpoint `ep-delicate-poetry-b5bbwllj`, database `neondb`, role `neondb_owner`.
 
 After separate explicit approval, run from the repository root in a private terminal with Node available:
 
@@ -45,4 +45,18 @@ The preflight now emits fixed category codes without displaying the URL, passwor
 
 Paste the URL itself into the hidden prompt, without shell commands, assignment prefixes or enclosing quotes. Percent-encode reserved characters in the password component, not the entire URL. A console URL containing only sslmode=require and channel_binding=require is rejected until sslaccept=strict is explicitly present. Channel binding require and schema public are accepted; arbitrary extra Neon/libpq options are intentionally rejected rather than assumed to be supported by Prisma. Do not remove guards or weaken TLS to make a URL pass.
 
-A current PASS is emitted only after actual Prisma SELECTs in a read-only transaction succeed with the validated dedicated URL. It proves successful connectivity under the configured strict connector settings, not a certificate-negative integration test or complete foundation-schema validation (the standalone preflight checks table count). New PASS receipts include policy PHASE4_STRICT_TLS_V2_DIAGNOSTICS, script SHA-256, UTC completion time and Prisma version. They never record credentials or attest password rotation. Older PASS receipts cannot establish which script version ran or whether it was after rotation; obtain a fresh post-rotation receipt when that provenance is missing.
+A current PASS is emitted only after actual Prisma SELECTs in a read-only transaction succeed with the validated dedicated URL. It proves successful connectivity under the configured strict connector settings, not a certificate-negative integration test or complete foundation-schema validation (the standalone preflight checks table count). New PASS receipts include policy PHASE4_STRICT_TLS_V4_EXACT_TARGET, script SHA-256, UTC completion time and Prisma version. They never record credentials or attest password rotation. Older PASS receipts cannot establish which script version ran or whether it was after rotation; obtain a fresh post-rotation receipt when that provenance is missing.
+
+## V4 exact target — 2026-10-19
+
+The sole allowed branch is `phase4-validation-v4` / `br-withered-mode-b528hnhk`, endpoint `ep-delicate-poetry-b5bbwllj`, direct hostname `ep-delicate-poetry-b5bbwllj.c-7.us-east-2.aws.neon.tech`. Expiration is pinned to `2026-10-26T09:48:09Z`; extensions require a reviewed pin update. Production, removed V2, preserved V3, alternate endpoints and poolers are rejected. Root status, schema-only initialization, ready state and false default/primary/protected flags are mandatory. V3 and the private diagnostic archive are preserved. Historical V3 setup/investigation documents describe earlier work only and do not authorize V3 targeting.
+
+The standalone read-only preflight expects the foundation baseline: 26 application tables and zero migration records, not the final Phase 4 schema. It checks table count, not full catalog equality or every application row count; those were separately verified read-only. Later trigger/function requirements belong to post-migration checks. Seven migration checksum pins, the VERIFIED_DUPLICATE_DETAIL classifier and SQL wrapper are unchanged.
+
+Next command, from repository root with the supported Node executable on PATH:
+
+```sh
+python3 -B backend/scripts/phase4-preflight.py
+```
+
+Enter only the V4 direct URL in the hidden prompt with `sslmode=require&sslaccept=strict&channel_binding=require`, then the Neon API key in its hidden prompt. No credentials belong in command arguments, files or chat. This command performs read-only identity and database checks; migrations and native fixture writes need separate approval.

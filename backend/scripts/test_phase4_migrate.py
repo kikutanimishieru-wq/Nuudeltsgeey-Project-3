@@ -50,9 +50,9 @@ class ExecutionGuardTests(unittest.TestCase):
 
     def test_wrong_or_expired_or_protected_identity_prevents_writes(self):
         from datetime import datetime,timezone,timedelta
-        now=datetime.now(timezone.utc)
+        now=datetime(2026, 10, 19, 10, tzinfo=timezone.utc)
         g=runner.guard
-        branch=dict(id=g.BRANCH,project_id=g.PROJECT,name='phase4-validation-v3',current_state='ready',primary=False,default=False,protected=False,expires_at=(now+timedelta(hours=2)).isoformat())
+        branch=dict(id=g.BRANCH,project_id=g.PROJECT,name='phase4-validation-v4',current_state='ready',primary=False,default=False,protected=False,init_source="parent-schema",expires_at=g.EXPIRES_AT)
         endpoint=dict(id=g.ENDPOINT,project_id=g.PROJECT,branch_id=g.BRANCH,host=g.HOST,disabled=False)
         for key,value in [('id','production'),('project_id','other'),('protected',True),('expires_at',now.isoformat())]:
             sums,ref,states=self.fixtures();command=unittest.mock.Mock()

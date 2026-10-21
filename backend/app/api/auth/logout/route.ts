@@ -3,6 +3,6 @@ import { NextResponse } from 'next/server';
 import { signOut } from '@/auth';
 
 export const POST = secureMutation(async function POST() {
-  await signOut({ redirect: false });
-  return NextResponse.json({ status: 'SIGNED_OUT' });
+  const result = await signOut({ redirect: false });
+  return NextResponse.json(result, {headers:{'Cache-Control':'no-store'}});
 });

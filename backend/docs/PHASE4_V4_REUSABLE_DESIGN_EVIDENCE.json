@@ -1,0 +1,272 @@
+{
+  "date": "2026-10-19",
+  "mode": "READ_ONLY",
+  "target": {
+    "project": "rough-snow-56584532",
+    "branch": "br-withered-mode-b528hnhk",
+    "endpoint": "ep-delicate-poetry-b5bbwllj",
+    "database": "neondb"
+  },
+  "application_counts": [
+    {
+      "table_name": "Achievement",
+      "rows": 0
+    },
+    {
+      "table_name": "AuditEvent",
+      "rows": 29
+    },
+    {
+      "table_name": "Cafe",
+      "rows": 0
+    },
+    {
+      "table_name": "ExternalIdentity",
+      "rows": 374
+    },
+    {
+      "table_name": "IdentityChallenge",
+      "rows": 0
+    },
+    {
+      "table_name": "IdentityLoginGrant",
+      "rows": 0
+    },
+    {
+      "table_name": "IdentitySequence",
+      "rows": 0
+    },
+    {
+      "table_name": "Incident",
+      "rows": 0
+    },
+    {
+      "table_name": "IncidentParty",
+      "rows": 0
+    },
+    {
+      "table_name": "MapVeto",
+      "rows": 0
+    },
+    {
+      "table_name": "Match",
+      "rows": 0
+    },
+    {
+      "table_name": "MatchCorrection",
+      "rows": 0
+    },
+    {
+      "table_name": "MatchParticipant",
+      "rows": 0
+    },
+    {
+      "table_name": "PlayerAchievement",
+      "rows": 0
+    },
+    {
+      "table_name": "PlayerNrSnapshot",
+      "rows": 0
+    },
+    {
+      "table_name": "PlayerProfile",
+      "rows": 187
+    },
+    {
+      "table_name": "PrivateIdentity",
+      "rows": 0
+    },
+    {
+      "table_name": "RankingEvent",
+      "rows": 0
+    },
+    {
+      "table_name": "RateLimitBucket",
+      "rows": 0
+    },
+    {
+      "table_name": "RatingTransaction",
+      "rows": 0
+    },
+    {
+      "table_name": "ResultConfirmation",
+      "rows": 0
+    },
+    {
+      "table_name": "ReviewAssignment",
+      "rows": 0
+    },
+    {
+      "table_name": "RulesAcceptance",
+      "rows": 0
+    },
+    {
+      "table_name": "SteamAssertionNonce",
+      "rows": 0
+    },
+    {
+      "table_name": "Suspension",
+      "rows": 0
+    },
+    {
+      "table_name": "Team",
+      "rows": 6
+    },
+    {
+      "table_name": "TeamInvitation",
+      "rows": 0
+    },
+    {
+      "table_name": "TeamMembership",
+      "rows": 23
+    },
+    {
+      "table_name": "Tournament",
+      "rows": 16
+    },
+    {
+      "table_name": "TournamentAward",
+      "rows": 0
+    },
+    {
+      "table_name": "TournamentLatenessClaim",
+      "rows": 2
+    },
+    {
+      "table_name": "TournamentLatenessRequest",
+      "rows": 2
+    },
+    {
+      "table_name": "TournamentLockSnapshot",
+      "rows": 3
+    },
+    {
+      "table_name": "TournamentRegistration",
+      "rows": 142
+    },
+    {
+      "table_name": "TournamentRegistrationPolicy",
+      "rows": 16
+    },
+    {
+      "table_name": "TournamentRosterMember",
+      "rows": 151
+    },
+    {
+      "table_name": "User",
+      "rows": 187
+    }
+  ],
+  "run_reference_counts": [
+    {
+      "table_name": "AuditEvent",
+      "rows": 29,
+      "prefixed_ids": 0,
+      "rows_with_run_reference": 29
+    },
+    {
+      "table_name": "ExternalIdentity",
+      "rows": 374,
+      "prefixed_ids": 0,
+      "rows_with_run_reference": 374
+    },
+    {
+      "table_name": "PlayerProfile",
+      "rows": 187,
+      "prefixed_ids": 187,
+      "rows_with_run_reference": 187
+    },
+    {
+      "table_name": "Team",
+      "rows": 6,
+      "prefixed_ids": 6,
+      "rows_with_run_reference": 6
+    },
+    {
+      "table_name": "TeamMembership",
+      "rows": 23,
+      "prefixed_ids": 0,
+      "rows_with_run_reference": 23
+    },
+    {
+      "table_name": "Tournament",
+      "rows": 16,
+      "prefixed_ids": 16,
+      "rows_with_run_reference": 16
+    },
+    {
+      "table_name": "TournamentLatenessClaim",
+      "rows": 2,
+      "prefixed_ids": 0,
+      "rows_with_run_reference": 2
+    },
+    {
+      "table_name": "TournamentLatenessRequest",
+      "rows": 2,
+      "prefixed_ids": 0,
+      "rows_with_run_reference": 2
+    },
+    {
+      "table_name": "TournamentLockSnapshot",
+      "rows": 3,
+      "prefixed_ids": 0,
+      "rows_with_run_reference": 3
+    },
+    {
+      "table_name": "TournamentRegistration",
+      "rows": 142,
+      "prefixed_ids": 130,
+      "rows_with_run_reference": 142
+    },
+    {
+      "table_name": "TournamentRegistrationPolicy",
+      "rows": 16,
+      "prefixed_ids": 0,
+      "rows_with_run_reference": 16
+    },
+    {
+      "table_name": "TournamentRosterMember",
+      "rows": 151,
+      "prefixed_ids": 131,
+      "rows_with_run_reference": 151
+    },
+    {
+      "table_name": "User",
+      "rows": 187,
+      "prefixed_ids": 187,
+      "rows_with_run_reference": 187
+    }
+  ],
+  "checks": {
+    "audit_links": [
+      {
+        "audit_rows": 29,
+        "linked_actor_event_entity": 29
+      }
+    ],
+    "snapshot_links": [
+      {
+        "embedded_players": 128,
+        "linked_players": 128
+      }
+    ],
+    "objects": [
+      {
+        "migration_rows": 7,
+        "completed_migrations": 7,
+        "noninternal_triggers": 16,
+        "database": "neondb",
+        "role": "neondb_owner"
+      }
+    ]
+  },
+  "ownership_status": "UNPROVEN",
+  "cleanup_status": "BLOCKED",
+  "approved_deletion_count": 0,
+  "limitations": [
+    "No durable pre-write ownership manifest identified",
+    "Graph linkage and fixture markers are corroboration, not deletion authority",
+    "Not an exact-key cleanup dry-run or complete JSON/field attestation",
+    "Queries were separate read-only snapshots; no cross-query snapshot consistency claimed"
+  ]
+}

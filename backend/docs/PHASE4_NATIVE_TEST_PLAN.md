@@ -1,6 +1,6 @@
 # Phase 4 native behavior/concurrency tests — PREPARED, NOT EXECUTED
 
-The current V3 target is verified at foundation stage only; migration rehearsal and native synthetic writes require separate authorization. Earlier successful migrations applied to V2, not V3. The only allowed future target is project `rough-snow-56584532`, branch `br-morning-queen-b5u7j4qz`, endpoint `ep-still-rain-b55chfrd`, direct host `ep-still-rain-b55chfrd.c-7.us-east-2.aws.neon.tech`, database `neondb`, role `neondb_owner`. Production endpoints `ep-crimson-rain-b5po4mqa` and `ep-wispy-voice-b4nvm1b4` are rejected by the shared allowlist.
+The current V4 target is verified at foundation stage only; migration rehearsal and native synthetic writes require separate authorization. Earlier successful migrations applied to V2, not V4. The only allowed future target is project `rough-snow-56584532`, branch `br-withered-mode-b528hnhk`, endpoint `ep-delicate-poetry-b5bbwllj`, direct host `ep-delicate-poetry-b5bbwllj.c-7.us-east-2.aws.neon.tech`, database `neondb`, role `neondb_owner`. Production endpoints `ep-crimson-rain-b5po4mqa` and `ep-wispy-voice-b4nvm1b4` are rejected by the shared allowlist.
 
 ## Preflight and authorization
 
@@ -69,3 +69,17 @@ Vitest retry is zero and bail is one. The existing explicit retry of a known-abo
 Next safe rehearsal: revoke the previously exposed API key and replace it outside chat. Obtain separate authorization for a fresh disposable schema-only branch with adequate expiration; record project, branch, endpoint, role, parent and copied-data status. Review and explicitly rebind the hardcoded guards (Python and native test) to that exact branch; there is no environment-variable target override. Run strict-TLS read-only preflight, then separately authorize migration rehearsal. Verify seven checksums and exact migrated catalog plus empty application tables. Only after separate synthetic-write authorization may the behavior runner be invoked. Retain the sanitized report; investigate any failure read-only before considering cleanup or another run. The expired branch and committed fixtures are not reset, retried or repaired. New branch creation, migration, execution and disposal remain separately authorized actions.
 
 Local verification: 41 Python regression tests and four Node reporter tests passed, including a real Vitest subprocess containing only a synthetic local assertion (no Prisma import or database access). TypeScript no-emit checks, Python/JavaScript syntax checks and Git whitespace checks passed. No native database suite or database connection was executed during remediation.
+
+## V4 exact target — 2026-10-19
+
+The sole allowed branch is `phase4-validation-v4` / `br-withered-mode-b528hnhk`, endpoint `ep-delicate-poetry-b5bbwllj`, direct hostname `ep-delicate-poetry-b5bbwllj.c-7.us-east-2.aws.neon.tech`. Expiration is pinned to `2026-10-26T09:48:09Z`; extensions require a reviewed pin update. Production, removed V2, preserved V3, alternate endpoints and poolers are rejected. Root status, schema-only initialization, ready state and false default/primary/protected flags are mandatory. V3 and the private diagnostic archive are preserved. Historical V3 setup/investigation documents describe earlier work only and do not authorize V3 targeting.
+
+The standalone read-only preflight expects the foundation baseline: 26 application tables and zero migration records, not the final Phase 4 schema. It checks table count, not full catalog equality or every application row count; those were separately verified read-only. Later trigger/function requirements belong to post-migration checks. Seven migration checksum pins, the VERIFIED_DUPLICATE_DETAIL classifier and SQL wrapper are unchanged.
+
+Next command, from repository root with the supported Node executable on PATH:
+
+```sh
+python3 -B backend/scripts/phase4-preflight.py
+```
+
+Enter only the V4 direct URL in the hidden prompt with `sslmode=require&sslaccept=strict&channel_binding=require`, then the Neon API key in its hidden prompt. No credentials belong in command arguments, files or chat. This command performs read-only identity and database checks; migrations and native fixture writes need separate approval.

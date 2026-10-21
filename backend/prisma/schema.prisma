@@ -107,10 +107,34 @@ model IdentitySequence {
   updatedAt DateTime @updatedAt
 }
 
+// Session core is source preparation only; no migration or activation performed.
+enum SessionAuthenticationMethod {
+  DISCORD
+  LEGACY_PASSWORD
+}
+
+model AuthSession {
+  idHash          String @id
+  userId          String
+  authGeneration  BigInt
+  method          SessionAuthenticationMethod
+  createdAt       DateTime @db.Timestamptz(3)
+  authenticatedAt DateTime @db.Timestamptz(3)
+  expiresAt       DateTime @db.Timestamptz(3)
+  revokedAt       DateTime? @db.Timestamptz(3)
+  user            User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  @@unique([idHash, userId, authGeneration])
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+  // CHECKs and immutability triggers require separately reviewed additive SQL.
+}
+
 model User {
   id                    String        @id @default(uuid())
   email                 String        @unique
   passwordHash          String
+  authGeneration        BigInt        @default(0)
+  authSessions          AuthSession[]
   role                  UserRole      @default(PLAYER)
   accountStatus         AccountStatus @default(CREATED)
   publicNmdId           String        @unique
@@ -554,6 +578,9 @@ model IdentityChallenge {
 }
 
 model IdentityLoginGrant {
+  // Nullable for historical grants; no default/backfill that could upgrade authority.
+  authGeneration BigInt?
+  createdAt      DateTime? @db.Timestamptz(3)
   tokenHash   String @id
   userId      String
   provider    IdentityProvider

@@ -1,9 +1,11 @@
+import { assertRevocableLinkingAvailable } from '@/lib/link-authorization';
+import { assertDiscordSignIn, resolveDiscordAccount, refreshCompetitiveStatus } from '@/lib/discord-accounts';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { auth, signIn } from '@/auth';
 import { applicationOrigin, clientRateKey } from '@/lib/request-security';
 import { parseProvider, verifySteam, verifyDiscord } from '@/lib/identity-providers';
-import { assertBrowserSecret, assertChallenge, hasAdministrativeHold, attachVerifiedIdentity, digest, identityCookie, newSecret } from '@/lib/identity';
+import { assertBrowserSecret, assertChallenge, attachVerifiedIdentity, digest, identityCookie, newSecret } from '@/lib/identity';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { prisma } from '@/lib/prisma';
 import { safeError, SecurityError } from '@/lib/security-error';
@@ -17,10 +19,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ prov
     const challenge = await prisma.identityChallenge.findUnique({ where: { tokenHash: digest(state) } });
     assertChallenge(challenge, provider);
     if (!challenge) throw new SecurityError('INVALID_IDENTITY_STATE', 400);
+    if (challenge.intent === 'SIGN_IN') assertDiscordSignIn(provider);
     const jar = await cookies(); const browser = jar.get(identityCookie(provider))?.value;
     assertBrowserSecret(browser, challenge.browserHash);
     const session = challenge.intent === 'LINK' ? await auth() : null;
     if (challenge.intent === 'LINK' && (!session?.user?.id || session.user.id !== challenge.userId)) throw new SecurityError('LINK_SESSION_CHANGED');
+    if (challenge.intent === 'LINK') assertRevocableLinkingAvailable();
     const callback = `${applicationOrigin()}/api/identity/${provider.toLowerCase()}/callback`;
     let subject: string; let nonce: string | undefined;
     if (provider === 'STEAM') {
@@ -38,11 +42,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ prov
       if (nonce) await tx.steamAssertionNonce.create({ data: { nonceHash: digest(nonce), expiresAt: new Date(Date.now() + 600_000) } });
       if (challenge.intent === 'LINK') {
         await attachVerifiedIdentity(tx, challenge.userId!, provider, subject);
+        await refreshCompetitiveStatus(tx, challenge.userId!);
       } else {
-        const link = await tx.externalIdentity.findUnique({ where: { provider_providerAccountId: { provider, providerAccountId: subject } } });
-        if (!link || link.revokedAt || hasAdministrativeHold(link)) throw new SecurityError('LINK_EXISTING_ACCOUNT_FIRST', 403);
-        await attachVerifiedIdentity(tx, link.userId, provider, subject);
-        await tx.identityLoginGrant.create({ data: { tokenHash: digest(ticket), userId: link.userId, provider,
+        const userId = await resolveDiscordAccount(tx, subject);
+        await tx.identityLoginGrant.create({ data: { tokenHash: digest(ticket), userId, provider,
           browserHash: challenge.browserHash, expiresAt: new Date(Date.now() + 60_000) } });
       }
     });

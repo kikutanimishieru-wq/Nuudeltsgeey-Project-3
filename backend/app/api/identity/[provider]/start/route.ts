@@ -1,3 +1,5 @@
+import { assertRevocableLinkingAvailable } from '@/lib/link-authorization';
+import { assertDiscordSignIn } from '@/lib/discord-accounts';
 import { verifyLinkPassword } from '@/lib/link-authentication';
 import { lockIdentityUser } from '@/lib/identity';
 import { NextResponse } from 'next/server';
@@ -15,6 +17,8 @@ export const POST = secureMutation(async (request: Request, { params }: { params
   const provider = parseProvider((await params).provider);
   const input = await request.json().catch(() => null);
   if (!input || !['LINK', 'SIGN_IN'].includes(input.intent)) throw new SecurityError('INVALID_IDENTITY_INTENT', 400);
+  if (input.intent === 'LINK') assertRevocableLinkingAvailable();
+  if (input.intent === 'SIGN_IN') assertDiscordSignIn(provider);
   const user = input.intent === 'LINK' ? await requireUser() : null;
   if (user) await enforceRateLimit('identity-link', user.id, 10, 600);
   const proof = user ? await verifyLinkPassword(user.id, input.password) : null;

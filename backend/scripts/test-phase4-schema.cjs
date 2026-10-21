@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { PGlite } = require('@electric-sql/pglite');
 const { metadataSql } = require('./phase4-schema-check.cjs');
 
-test('expanded catalog query executes using read-only SELECTs', async () => {
+test('expanded catalog query executes using read-only SELECTs', { skip: process.env.PHASE4_NO_DATABASE_TESTS === '1' || process.env.PHASE4_ALLOW_LOCAL_SQL_TESTS !== '1' }, async () => {
  const db = new PGlite();
  try {
   const result = await db.query(metadataSql);

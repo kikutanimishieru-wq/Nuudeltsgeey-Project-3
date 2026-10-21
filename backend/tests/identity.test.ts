@@ -39,7 +39,7 @@ describe('identity state and uniqueness', () => {
   });
   it('rejects replayed login tickets even if two readers saw the same grant', async () => {
     const db = tx(); const ticket = newSecret();
-    db.identityLoginGrant.findUnique.mockResolvedValue({ tokenHash: digest(ticket), provider: 'STEAM', userId: 'user', browserHash: digest('browser'), expiresAt: new Date(Date.now() + 60000), consumedAt: null });
+    db.identityLoginGrant.findUnique.mockResolvedValue({ tokenHash: digest(ticket), provider: 'DISCORD', userId: 'user', browserHash: digest('browser'), expiresAt: new Date(Date.now() + 60000), consumedAt: null });
     db.identityLoginGrant.updateMany.mockResolvedValue({ count: 0 });
     vi.mocked(prisma.$transaction).mockImplementation(async (fn: any) => fn(db));
     expect(await consumeLoginGrant(ticket, 'browser')).toBeNull();

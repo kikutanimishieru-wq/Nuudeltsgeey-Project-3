@@ -25,13 +25,16 @@ class GuardTests(unittest.TestCase):
                 guard.validate_url(value)
 
     def test_live_metadata_required(self):
-        now = datetime.now(timezone.utc)
-        branch = dict(id=guard.BRANCH, project_id=guard.PROJECT, name='phase4-validation-v3',
-                      current_state='ready', primary=False, default=False, protected=False,
-                      expires_at=(now + timedelta(hours=2)).isoformat())
+        now = datetime(2026, 10, 19, 10, tzinfo=timezone.utc)
+        branch = dict(id=guard.BRANCH, project_id=guard.PROJECT, name='phase4-validation-v4',
+                      current_state='ready', primary=False, default=False, protected=False, init_source="parent-schema",
+                      expires_at=guard.EXPIRES_AT)
         endpoint = dict(id=guard.ENDPOINT, project_id=guard.PROJECT, branch_id=guard.BRANCH,
                         host=guard.HOST, disabled=False)
         guard.validate_metadata(branch, endpoint, now)
+        expiry=datetime.fromisoformat(guard.EXPIRES_AT.replace('Z','+00:00'))
+        for late in [expiry-timedelta(hours=1),expiry,expiry+timedelta(seconds=1)]:
+            with self.assertRaises(ValueError):guard.validate_metadata(branch,endpoint,late)
         for key, value in [('primary', True), ('default', True), ('protected', True),
                            ('id', 'production'), ('expires_at', now.isoformat())]:
             with self.subTest(key=key), self.assertRaises(Exception):
@@ -41,12 +44,12 @@ class GuardTests(unittest.TestCase):
 
     def test_retired_target_and_wrong_name_rejected(self):
         safe='postgresql://neondb_owner:synthetic@'+guard.HOST+'/neondb?sslmode=require&sslaccept=strict'
-        for host in ['ep-still-glitter-b51rfltc.c-7.us-east-2.aws.neon.tech','ep-round-leaf-b5w0evea.c-7.us-east-2.aws.neon.tech',guard.ENDPOINT+'-pooler.c-7.us-east-2.aws.neon.tech']:
+        for host in ['ep-crimson-rain-b5po4mqa.c-7.us-east-2.aws.neon.tech','ep-still-rain-b55chfrd.c-7.us-east-2.aws.neon.tech','ep-still-glitter-b51rfltc.c-7.us-east-2.aws.neon.tech','ep-round-leaf-b5w0evea.c-7.us-east-2.aws.neon.tech',guard.ENDPOINT+'-pooler.c-7.us-east-2.aws.neon.tech']:
             with self.assertRaises(ValueError):guard.validate_url(safe.replace(guard.HOST,host))
-        now=datetime.now(timezone.utc)
-        branch=dict(id=guard.BRANCH,project_id=guard.PROJECT,name='phase4-validation-v3',current_state='ready',primary=False,default=False,protected=False,expires_at=(now+timedelta(hours=2)).isoformat())
+        now=datetime(2026, 10, 19, 10, tzinfo=timezone.utc)
+        branch=dict(id=guard.BRANCH,project_id=guard.PROJECT,name='phase4-validation-v4',current_state='ready',primary=False,default=False,protected=False,init_source="parent-schema",expires_at=guard.EXPIRES_AT)
         endpoint=dict(id=guard.ENDPOINT,branch_id=guard.BRANCH,project_id=guard.PROJECT,host=guard.HOST,disabled=False)
-        for changes in [dict(id='br-ancient-water-b51y8pjw'),dict(id='br-plain-glitter-b5cadax8'),dict(name='phase4-validation-v2'),dict(name='phase4-validation'),dict(project_id='other')]:
+        for changes in [dict(id='br-wispy-mountain-b5nku4bf'),dict(id='br-morning-queen-b5u7j4qz'),dict(parent_id='source'),dict(init_source='parent-data'),dict(expires_at='2026-10-26T09:48:10Z'),dict(name='phase4-validation-v3'),dict(id='br-ancient-water-b51y8pjw'),dict(id='br-plain-glitter-b5cadax8'),dict(name='phase4-validation-v2'),dict(name='phase4-validation'),dict(project_id='other')]:
             with self.assertRaises(ValueError):guard.validate_metadata({**branch,**changes},endpoint,now)
 
     def test_adversarial_urls(self):
@@ -208,8 +211,8 @@ class GuardTests(unittest.TestCase):
 
     def test_current_pass_receipt_and_dedicated_connection(self):
         import json
-        now=datetime.now(timezone.utc)
-        branch=dict(id=guard.BRANCH,project_id=guard.PROJECT,name='phase4-validation-v3',current_state='ready',primary=False,default=False,protected=False,expires_at=(now+timedelta(hours=2)).isoformat())
+        now=datetime(2026, 10, 19, 10, tzinfo=timezone.utc)
+        branch=dict(id=guard.BRANCH,project_id=guard.PROJECT,name='phase4-validation-v4',current_state='ready',primary=False,default=False,protected=False,init_source="parent-schema",expires_at=guard.EXPIRES_AT)
         endpoint=dict(id=guard.ENDPOINT,project_id=guard.PROJECT,branch_id=guard.BRANCH,host=guard.HOST,disabled=False)
         responses=[]
         for value in [{'branch':branch},{'endpoint':endpoint}]:
@@ -218,7 +221,8 @@ class GuardTests(unittest.TestCase):
         safe='postgresql://neondb_owner:synthetic@'+guard.HOST+'/neondb?sslmode=require&sslaccept=strict'
         result={'identity':{'database':'neondb','role':'neondb_owner'},'applicationTables':26,'migrationRecords':0}
         output=io.StringIO()
-        with patch.object(guard.sys,'argv',['preflight']),patch.object(guard.sys.stdin,'isatty',return_value=True),patch.object(guard.shutil,'which',return_value='node'),patch.object(guard,'verify_engine'),patch.object(guard,'hidden_input',side_effect=[safe,'synthetic-api-key']),patch.object(guard,'build_opener',return_value=opener),patch.object(guard,'run_group',return_value=result) as process,contextlib.redirect_stdout(output):
+        with patch.object(guard,'datetime',wraps=datetime) as clock,patch.object(guard.sys,'argv',['preflight']),patch.object(guard.sys.stdin,'isatty',return_value=True),patch.object(guard.shutil,'which',return_value='node'),patch.object(guard,'verify_engine'),patch.object(guard,'hidden_input',side_effect=[safe,'synthetic-api-key']),patch.object(guard,'build_opener',return_value=opener),patch.object(guard,'run_group',return_value=result) as process,contextlib.redirect_stdout(output):
+            clock.now.return_value=now
             self.assertEqual(guard.cli(),0)
         receipt=json.loads(output.getvalue())
         self.assertEqual(receipt['preflight_policy'],guard.PREFLIGHT_POLICY)

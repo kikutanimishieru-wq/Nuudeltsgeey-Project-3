@@ -20,9 +20,11 @@ from urllib.parse import urlsplit, parse_qsl, unquote, urlencode
 from urllib.request import Request, build_opener, HTTPRedirectHandler, ProxyHandler
 
 PROJECT = 'rough-snow-56584532'
-BRANCH = 'br-morning-queen-b5u7j4qz'
-ENDPOINT = 'ep-still-rain-b55chfrd'
+BRANCH = 'br-withered-mode-b528hnhk'
+ENDPOINT = 'ep-delicate-poetry-b5bbwllj'
 HOST = ENDPOINT + '.c-7.us-east-2.aws.neon.tech'
+EXPIRES_AT = '2026-10-26T09:48:09Z'
+REJECTED_BRANCHES = frozenset({'br-wispy-mountain-b5nku4bf', 'br-plain-glitter-b5cadax8', 'br-morning-queen-b5u7j4qz'})
 BACKEND = Path(__file__).resolve().parents[1]
 
 
@@ -35,7 +37,7 @@ TIMEOUT_OPTIONS = '-c statement_timeout=60000 -c lock_timeout=10000 -c idle_in_t
 ENGINE_HASH = 'c2990dca591cba766e3b7ef5d9e8a84796e47ab7'
 
 
-PREFLIGHT_POLICY = 'PHASE4_STRICT_TLS_V2_DIAGNOSTICS'
+PREFLIGHT_POLICY = 'PHASE4_STRICT_TLS_V4_EXACT_TARGET'
 URL_QUERY_ALLOWLIST = frozenset({
     'sslmode', 'sslaccept', 'channel_binding', 'schema',
     'connect_timeout', 'socket_timeout', 'options',
@@ -229,9 +231,13 @@ def verify_engine(node):
 
 
 def validate_metadata(branch, endpoint, now):
+    require(branch.get('id') not in REJECTED_BRANCHES)
     require(branch.get('id') == BRANCH and branch.get('project_id') == PROJECT)
-    require(branch.get('name') == 'phase4-validation-v3' and branch.get('current_state') == 'ready')
+    require(branch.get('name') == 'phase4-validation-v4' and branch.get('current_state') == 'ready')
     require(all(branch.get(k) is False for k in ('primary', 'default', 'protected')))
+    require(not branch.get('parent_id'))
+    require(branch.get('init_source') in ('parent-schema', 'schema-only'))
+    require(branch.get('expires_at') == EXPIRES_AT)
     expires = datetime.fromisoformat(branch['expires_at'].replace('Z', '+00:00'))
     require((expires - now).total_seconds() > 3600)
     require(endpoint.get('id') == ENDPOINT and endpoint.get('branch_id') == BRANCH)
@@ -279,6 +285,7 @@ const db=new PrismaClient({datasources:{db:{url:process.env.PHASE4_VALIDATION_DA
     if(identity[0].database!=='neondb'||identity[0].role!=='neondb_owner') throw Error();
     const ledger=await tx.$queryRawUnsafe('SELECT migration_name FROM public."_prisma_migrations"');
     if(ledger.length) throw Error();
+    // Foundation baseline only: 26 tables and empty ledger; later Phase 4 triggers are not required.
     const tables=await tx.$queryRawUnsafe("SELECT count(*)::int AS count FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' AND table_name<>'_prisma_migrations'");
     if(tables[0].count!==26) throw Error();
     return {identity:identity[0],applicationTables:26,migrationRecords:0};
